@@ -1,0 +1,148 @@
+﻿C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:4:const { boolToInt, fromJson, getDb, nowIso, runInTransaction, toJson } = require('../lib/sqlite');
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:162:try { getDb(); return next(); }
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:170:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:172:db.prepare('DELETE FROM otp_codes WHERE user_id = ? AND type = ?').run(userId, type);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:173:db.prepare('INSERT INTO otp_codes (user_id, type, code, expires_at) VALUES (?, ?, ?, ?)')
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:178:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:179:const row = db.prepare('SELECT * FROM otp_codes WHERE user_id = ? AND type = ? ORDER BY created_at DESC LIMIT 1').get(userId, type);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:183:db.prepare('DELETE FROM otp_codes WHERE id = ?').run(row.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:239:const row = getDb().prepare('SELECT * FROM users WHERE id = ?').get(id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:243:const row = getDb().prepare('SELECT * FROM users WHERE email = ?').get(normalizeEmail(email));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:247:const row = getDb().prepare('SELECT * FROM users WHERE username = ?').get(normalizeUsername(username));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:258:const row = getDb().prepare('SELECT * FROM users WHERE email = ? OR username = ?').get(
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:264:const row = getDb().prepare('SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM courses').get();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:284:includes: parseIncludes(body.includes, fromJson(existingCourse?.includes_json, [])),
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:296:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:312:return db.prepare(`SELECT * FROM courses ${whereClause} ORDER BY id ASC, created_at ASC`).all(...params);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:315:return getDb().prepare('SELECT * FROM courses WHERE id = ?').get(Number(id));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:321:const rows = getDb().prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:354:includes: fromJson(row.includes_json, []),
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:368:const enrollments = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:373:const paidOrders = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:394:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:395:const orders = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:400:const items = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:426:const existingEnrollment = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?').get(userId, courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:429:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:431:const orderResult = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:436:db.prepare(`INSERT INTO order_items (order_id, course_id, course_title, price_at_time, created_at) VALUES (?, ?, ?, ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:438:db.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:440:db.prepare('UPDATE courses SET students_count = students_count + 1, updated_at = ? WHERE id = ?').run(timestamp, courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:456:const category = getDb().prepare('SELECT name FROM categories WHERE slug = ?').get(categorySlug);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:468:const categories = getDb().prepare('SELECT id, name, slug FROM categories ORDER BY name ASC').all();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:492:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:493:const user = db.prepare('SELECT role FROM users WHERE id = ?').get(decoded.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:498:const lesson = db.prepare('SELECT course_id, is_free FROM lessons WHERE video_url LIKE ?').get('%' + filename);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:500:const enrollment = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?').get(decoded.id, lesson.course_id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:531:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:532:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:535:const result = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:567:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:579:db.prepare('UPDATE users SET is_verified = 1, updated_at = ? WHERE id = ?').run(nowIso(), Number(userId));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:630:return res.json({ token: signToken(user), user: serializeUser(getDb(), user) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:671:getDb().prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:672:.run(passwordHash, nowIso(), Number(userId));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:684:return res.json({ user: serializeUser(getDb(), freshUser), orders: getUserOrders(freshUser.id) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:714:getDb().prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:716:`).run(firstName, lastName, normalizedUsername, String(phone || ''), passwordHash, nowIso(), user.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:718:return res.json({ user: serializeUser(getDb(), getUserById(user.id)) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:745:const existingEnrollments = getDb().prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:756:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:758:const createdOrder = runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:759:const orderResult = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:765:db.prepare(`INSERT INTO order_items (order_id, course_id, course_title, price_at_time, created_at) VALUES (?, ?, ?, ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:767:db.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:769:db.prepare('UPDATE courses SET students_count = students_count + 1, updated_at = ? WHERE id = ?').run(timestamp, course.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:771:return db.prepare('SELECT * FROM orders WHERE id = ?').get(sqliteOrderId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:801:user: serializeUser(getDb(), freshUser),
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:819:getDb().prepare(`INSERT INTO contacts (name, email, subject, message, created_at) VALUES (?, ?, ?, ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:820:.run(cleanName, cleanEmail, cleanSubject, cleanMsg, nowIso());
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:852:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:853:const users = db.prepare('SELECT * FROM users ORDER BY created_at DESC').all().map(mapUserRow);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:862:const enrollments = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:868:const orders = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:919:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:921:const createdUserId = runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:923:const userResult = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:938:return res.status(201).json({ user: serializeUser(getDb(), getUserById(createdUserId)) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:955:runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:961:return res.json({ message: 'تم تسجيل المستخدم في الكورس بنجاح', user: serializeUser(getDb(), getUserById(userId)) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:978:runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:979:const existingEnrollment = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?').get(userId, courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:981:db.prepare('DELETE FROM enrollments WHERE id = ?').run(existingEnrollment.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:982:db.prepare('UPDATE courses SET students_count = MAX(0, students_count - 1), updated_at = ? WHERE id = ?').run(nowIso(), courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:988:return res.json({ message: 'تم إزالة المستخدم من الكورس بنجاح', user: serializeUser(getDb(), getUserById(userId)) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1007:getDb().prepare('UPDATE users SET role = ?, updated_at = ? WHERE id = ?').run(role, nowIso(), userId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1008:return res.json({ message: role === 'admin' ? 'تمت ترقية المستخدم إلى أدمن 👑' : 'تم تحويل الأدمن إلى مستخدم عادي', user: serializeUser(getDb(), getUserById(userId)) });
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1017:const rows = getDb().prepare('SELECT * FROM contacts ORDER BY created_at DESC').all();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1028:const categories = getDb().prepare('SELECT * FROM categories ORDER BY name ASC').all();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1041:const result = getDb().prepare('INSERT INTO categories (name, slug, created_at) VALUES (?, ?, ?)')
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1042:.run(name.trim(), slug.trim(), nowIso());
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1043:const newCategory = getDb().prepare('SELECT * FROM categories WHERE id = ?').get(result.lastInsertRowid);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1058:getDb().prepare('UPDATE categories SET name = ?, slug = ? WHERE id = ?').run(name.trim(), slug.trim(), id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1065:getDb().prepare('DELETE FROM categories WHERE id = ?').run(Number(req.params.id));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1077:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1078:getDb().prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1081:`).run(courseId, payload.title, payload.category, payload.emoji, payload.bg, payload.badge, payload.level, payload.price, payload.oldPrice, payload.durationLabel, payload.studentsCount, payload.rating, payload.description, toJson(payload.includes, []), payload.thumbnail, boolToInt(payload.isPublished), timestamp, timestamp);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1092:getDb().prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1094:`).run(payload.title, payload.category, payload.emoji, payload.bg, payload.badge, payload.level, payload.price, payload.oldPrice, payload.durationLabel, payload.studentsCount, payload.rating, payload.description, toJson(payload.includes, []), payload.thumbnail, boolToInt(payload.isPublished), nowIso(), courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1103:runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1104:db.prepare('DELETE FROM enrollments WHERE course_id = ?').run(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1105:db.prepare('DELETE FROM courses WHERE id = ?').run(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1144:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1145:const nextOrderRow = db.prepare('SELECT COALESCE(MAX(lesson_order), 0) + 1 AS next_order FROM lessons WHERE course_id = ?').get(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1146:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1147:db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1150:`).run(courseId, String(title).trim(), '', String(duration || ''), String(url || ''), videoUrl, String(req.body.videoData || ''), boolToInt(free === 'true' || free === true), nextOrderRow?.next_order || 1, timestamp, timestamp, timestamp);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1160:const lessons = getDb().prepare('SELECT id FROM lessons WHERE course_id = ? ORDER BY lesson_order ASC, id ASC').all(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1163:runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1164:db.prepare('DELETE FROM lessons WHERE id = ?').run(lessons[lessonIndex].id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1165:db.prepare('SELECT id FROM lessons WHERE course_id = ? ORDER BY lesson_order ASC, id ASC').all(courseId)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\site.js:1166:.forEach((lesson, index) => db.prepare('UPDATE lessons SET lesson_order = ?, updated_at = ? WHERE id = ?').run(index + 1, nowIso(), lesson.id));
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:6:const { getDb, runInTransaction, nowIso } = require('../lib/sqlite');
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:10:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:23:return db.prepare(`SELECT * FROM courses ${whereClause} ORDER BY id ASC, created_at ASC`).all(...params);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:43:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:44:const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:47:const orderItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:49:runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:107:const orderId = runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:108:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:109:const orderResult = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:116:db.prepare(`INSERT INTO order_items (order_id, course_id, course_title, price_at_time, created_at) VALUES (?, ?, ?, ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:134:getDb().prepare('UPDATE orders SET stripe_session_id = ? WHERE id = ?')
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:164:const result = getDb().prepare("UPDATE orders SET status = 'paid', stripe_payment_intent = ? WHERE id = ? AND status = 'pending'")
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:169:const order = getDb().prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:203:const dbOrder = getDb().prepare('SELECT * FROM orders WHERE order_id = ?').get(tapOrderId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:208:const result = getDb().prepare("UPDATE orders SET status = 'paid', updated_at = ? WHERE id = ? AND status = 'pending'")
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:209:.run(nowIso(), dbOrder.id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:235:const orderId = runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:236:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:237:const orderResult = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:244:db.prepare(`INSERT INTO order_items (order_id, course_id, course_title, price_at_time, created_at) VALUES (?, ?, ?, ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:265:getDb().prepare('UPDATE orders SET payment_reference = ? WHERE id = ?').run(charge?.id || orderReference, orderId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:276:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:278:const order = db.prepare('SELECT * FROM orders WHERE stripe_session_id = ?').get(req.params.sessionId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:281:const items = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:312:const orderId = runInTransaction((db) => {
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:313:const timestamp = nowIso();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:314:const orderResult = db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:321:db.prepare(`INSERT INTO order_items (order_id, course_id, course_title, price_at_time, created_at) VALUES (?, ?, ?, ?, ?)`)
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\payments.js:328:getDb().prepare('UPDATE orders SET payment_reference = ? WHERE id = ?').run(orderReference, orderId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:12:const { getDb, nowIso, runInTransaction } = require('../lib/sqlite');
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:50:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:51:const lessons = db.prepare('SELECT * FROM lessons WHERE course_id = ? ORDER BY lesson_order ASC, id ASC').all(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:77:db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:91:videoInfo.fileSize, videoInfo.status, nowIso(), nowIso(), lesson.id
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:130:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:137:const lessons = db.prepare('SELECT * FROM lessons WHERE course_id = ? ORDER BY lesson_order ASC, id ASC').all(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:151:const enrollment = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?')
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:211:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:217:const lessons = db.prepare('SELECT * FROM lessons WHERE course_id = ? ORDER BY lesson_order ASC, id ASC').all(courseId);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:228:db.prepare(`
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\routes\videos.js:232:`).run(nowIso(), lessons[lessonIdx].id);
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\middleware\auth.js:2:const { getDb } = require('../lib/sqlite');
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\middleware\auth.js:31:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\middleware\auth.js:32:const userRow = db.prepare('SELECT * FROM users WHERE username = ?').get('admin1');
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\middleware\auth.js:41:const db = getDb();
+C:\Users\Ahmad GR\Downloads\CTS\hifz-platform-complete\hifz-platform\server\middleware\auth.js:42:const userRow = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.id);

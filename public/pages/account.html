@@ -1,0 +1,81 @@
+<div class="page" id="pg-account">
+  <div class="account-wrap">
+    <div id="authSec">
+      <div class="section-title" style="margin-bottom:32px">
+        <h2>مرحباً بك في <span>السلسبيل</span></h2>
+        <p>تسجيل الدخول أو إنشاء حساب جديد للبدء</p>
+      </div>
+      <div class="auth-grid">
+        <div class="auth-box" id="loginBox">
+          <h3>تسجيل الدخول</h3>
+          <div class="fg"><label>البريد الإلكتروني أو اسم المستخدم</label><input type="text" id="lEmail" placeholder="example@email.com أو user123"></div>
+          <div class="fg"><label>كلمة المرور</label><input type="password" id="lPass" placeholder="••••••••"></div>
+          <button class="btn-primary" style="width:100%;padding:13px;margin-bottom:12px" onclick="doLogin()">دخول</button>
+          <span style="color:var(--emerald);cursor:pointer;font-size:.82rem" onclick="openForgotModal()">نسيت كلمة المرور؟</span>
+        </div>
+        <div class="auth-box" id="regBox">
+          <h3>حساب جديد</h3>
+          <div class="fg"><label>الاسم الأول</label><input type="text" id="rFirstName" autocomplete="given-name" placeholder="الاسم الأول"></div>
+          <div class="fg"><label>اسم العائلة</label><input type="text" id="rLastName" autocomplete="family-name" placeholder="اسم العائلة"></div>
+          <div class="fg"><label>اسم المستخدم</label><input type="text" id="rUsername" placeholder="مثال: user123"></div>
+          <div class="fg"><label>البريد الإلكتروني</label><input type="email" id="rEmail" placeholder="your@email.com"></div>
+          <div class="fg"><label>كلمة المرور</label><input type="password" id="rPass" placeholder="6+ أحرف مع حرف ورقم ورمز"></div>
+          <div class="fg"><label>تأكيد كلمة المرور</label><input type="password" id="rPass2" placeholder="أعد كتابة كلمة المرور"></div>
+          <p class="auth-note">اسم المستخدم يجب أن يكون 3 خانات على الأقل، ويمكن أن يحتوي على أحرف أو أرقام أو شرطة سفلية. كلمة المرور 6 خانات فأكثر مع حرف ورقم ورمز.</p>
+          <button class="btn-primary" style="width:100%;padding:13px" onclick="doRegister()">إنشاء الحساب</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashSec" style="display:none">
+      <div class="dash-grid">
+        <div class="dash-sb">
+          <div class="dsi act" onclick="showDTab('main',this)">⚡ الرئيسية</div>
+          <div class="dsi" onclick="showDTab('courses',this)">📚 كورساتي</div>
+          <div class="dsi" onclick="showDTab('orders',this)">📦 طلباتي</div>
+          <div class="dsi" onclick="showDTab('settings',this)">⚙️ الإعدادات</div>
+          <div class="dsi" id="adminBtn" onclick="showAdmin()" style="display:none">🔧 لوحة الإدارة</div>
+          <div class="dsi" onclick="doLogout()" style="border-top:1px solid var(--parchment);margin-top:auto">🚪 تسجيل الخروج</div>
+        </div>
+        <div class="dash-c">
+          <div id="dtab-main">
+            <h3>مرحباً بعودتك ✨</h3>
+            <div class="d-stats">
+              <div class="d-stat"><div class="d-stat-num" id="stEnrolled">0</div><div class="d-stat-lbl">كورس مسجل</div></div>
+              <div class="d-stat"><div class="d-stat-num" id="stCompleted">0</div><div class="d-stat-lbl">كورس مكتمل</div></div>
+              <div class="d-stat"><div class="d-stat-num" id="stSpent">$0</div><div class="d-stat-lbl">إجمالي الدفع</div></div>
+            </div>
+            <p id="dGreet" style="color:var(--text3);line-height:1.9;font-size:.9rem"></p>
+          </div>
+          <div id="dtab-courses" style="display:none">
+            <h3>كورساتي</h3>
+            <div id="myCoursesListD"></div>
+          </div>
+          <div id="dtab-orders" style="display:none">
+            <h3>سجل الطلبات</h3>
+            <div id="myOrdersList"></div>
+          </div>
+          <div id="dtab-settings" style="display:none">
+            <h3>إعدادات الحساب</h3>
+            <div class="form-grid">
+              <div class="fg"><label>الاسم الأول</label><input type="text" id="dFirstName" autocomplete="given-name"></div>
+              <div class="fg"><label>اسم العائلة</label><input type="text" id="dLastName" autocomplete="family-name"></div>
+              <div class="fg"><label>اسم المستخدم</label><input type="text" id="dUsername"></div>
+              <div class="fg"><label>البريد الإلكتروني</label><input type="email" id="dEmail"></div>
+            </div>
+            <div class="fg"><label>رقم الجوال</label><input type="text" id="dPhone"></div>
+            <div class="fg full"><label>الصورة الشخصية</label><input type="file" id="dAvatar" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewAvatar()"><img id="dAvatarPreview" alt="الصورة الشخصية" style="display:none;width:72px;height:72px;border-radius:50%;object-fit:cover;margin-top:8px"></div>
+            <div style="border-top:1px solid var(--parchment);padding-top:18px;margin-top:8px">
+              <h3 style="border:none;padding:0;margin-bottom:14px;font-size:1rem">تغيير كلمة المرور</h3>
+              <div class="fg"><label>كلمة المرور الحالية</label><input type="password" id="curP"></div>
+              <div class="fg"><label>كلمة المرور الجديدة</label><input type="password" id="newP"></div>
+              <div class="fg"><label>تأكيد الجديدة</label><input type="password" id="newP2"></div>
+            </div>
+            <button class="btn-primary" style="padding:11px 28px" onclick="saveProfile()">حفظ التغييرات</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

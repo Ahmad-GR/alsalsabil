@@ -1,0 +1,37 @@
+<div class="page" id="pg-messages">
+  <div class="section-title" style="padding-top:42px">
+    <span class="tag">تواصل آمن</span>
+    <h2><span>الرسائل</span></h2>
+    <p>محادثاتك ورسائلك في مكان واحد</p>
+  </div>
+  <section class="messenger page-box" aria-label="الرسائل">
+    <aside class="messenger-sidebar">
+      <div class="messenger-sidebar-head">
+        <h3>الدردشات</h3>
+        <input id="messageThreadSearch" type="search" placeholder="ابحث في المحادثات" oninput="renderMessageThreads()">
+      </div>
+      <div id="messageThreads" class="message-threads"></div>
+      <div class="message-new">
+        <label for="messageUserSearch">بدء محادثة جديدة</label>
+        <input id="messageUserSearch" placeholder="ابحث عن مستخدم" oninput="filterMessageRecipients()">
+        <select id="messageRecipient" aria-label="المستلم"><option value="">ابحث عن مستخدم أولاً</option></select>
+        <button class="btn-primary" type="button" onclick="openNewMessageConversation()">محادثة جديدة</button>
+      </div>
+    </aside>
+    <section class="messenger-conversation">
+      <header id="messageConversationHeader" class="conversation-header">
+        <strong>اختر محادثة للبدء</strong>
+      </header>
+      <div id="messagesList" class="conversation-messages" aria-live="polite">
+        <div class="no-data">اختر محادثة من القائمة أو ابدأ محادثة جديدة</div>
+      </div>
+      <form class="message-compose" onsubmit="event.preventDefault();sendDashboardMessage()">
+        <textarea id="messageBody" maxlength="10000" placeholder="اكتب رسالتك..." aria-label="نص الرسالة"></textarea>
+        <div class="message-compose-actions">
+          <input id="messageImage" type="file" accept="image/jpeg,image/png,image/gif,image/webp" aria-label="إرفاق صورة">
+          <button class="btn-primary" id="sendMessageButton" type="submit">إرسال</button>
+        </div>
+      </form>
+    </section>
+  </section>
+</div>

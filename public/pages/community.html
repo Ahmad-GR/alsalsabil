@@ -1,0 +1,21 @@
+<div class="page" id="pg-community">
+  <div class="section-title" style="padding-top:42px">
+    <span class="tag">مساحة المجتمع</span>
+    <h2><span>المنشورات</span></h2>
+    <p>آخر المنشورات العامة ومنشورات الكورسات المسجل بها</p>
+  </div>
+  <div class="community-layout page-box">
+    <section id="communityComposer" class="community-composer" hidden>
+      <div class="community-composer-title"><span class="community-composer-avatar">✎</span><strong>أنشئ منشوراً للمجتمع</strong></div>
+      <div class="fg"><label for="communityPostTitle">عنوان المنشور</label><input id="communityPostTitle" maxlength="200" placeholder="ما الجديد؟"></div>
+      <div class="fg"><label for="communityPostBody">المحتوى</label><textarea id="communityPostBody" maxlength="30000" placeholder="اكتب تفاصيل المنشور..."></textarea></div>
+      <div class="community-compose-row">
+        <div class="fg"><label for="communityPostCourse">مكان النشر</label><select id="communityPostCourse"></select></div>
+        <div class="fg"><label for="communityPostImage">صورة (اختياري)</label><input id="communityPostImage" type="file" accept="image/jpeg,image/png,image/gif,image/webp"></div>
+        <button class="btn-primary" id="publishCommunityPostButton" type="button" onclick="publishCommunityPost()">نشر المنشور</button>
+      </div>
+      <small class="auth-note">المنشور العام يظهر لجميع المستخدمين المسجلين، ويمكنك اختيار كورس محدد لعرضه على طلابه فقط.</small>
+    </section>
+    <div id="communityPosts" class="community-feed"></div>
+  </div>
+</div>

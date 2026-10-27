@@ -1,0 +1,176 @@
+<div class="page" id="pg-admin">
+  <div style="background:linear-gradient(135deg,var(--teal),var(--emerald));padding:48px 40px;text-align:center">
+    <h1 style="font-family:'Amiri',serif;font-size:2rem;color:#fff;margin-bottom:6px">🔧 لوحة الإدارة</h1>
+    <p style="color:rgba(255,255,255,.7)">إدارة الكورسات والمحتوى التعليمي</p>
+  </div>
+  <div class="admin-wrap">
+    <div class="admin-tabs">
+      <div class="atab active" onclick="showATab('list',this)">📋 الكورسات</div>
+      <div class="atab" onclick="showATab('add',this)">➕ إضافة كورس</div>
+      <div class="atab" onclick="showATab('videos',this)">🎬 إدارة الفيديوهات</div>
+      <div class="atab" onclick="showATab('categories',this)">🏷️ التصنيفات</div>
+      <div class="atab" onclick="showATab('users',this)">👥 المستخدمون</div>
+        <div class="atab" onclick="showATab('posts',this)">📝 المنشورات</div>
+    </div>
+
+    <!-- LIST -->
+    <div class="admin-sec active" id="atab-list">
+      <h3>جميع الكورسات</h3>
+      <div class="admin-course-list" id="adminCourseList"></div>
+    </div>
+
+    <!-- ADD COURSE -->
+    <div class="admin-sec" id="atab-add">
+      <h3 id="courseFormTitle">إضافة كورس جديد</h3>
+      <input type="hidden" id="editCourseId">
+      <div class="form-grid">
+        <div class="fg"><label>اسم الكورس *</label><input type="text" id="cTitle" placeholder="مثال: برنامج حفظ جزء عم"></div>
+        <div class="fg"><label>التصنيف *</label>
+          <select id="cCat"><!-- Options will be loaded dynamically --></select>
+        </div>
+        <div class="fg"><label>السعر (USD) *</label><input type="number" id="cPrice" placeholder="15"></div>
+        <div class="fg"><label>السعر القديم (USD)</label><input type="number" id="cOldPrice" placeholder="29"></div>
+        <div class="fg"><label>المستوى</label>
+          <select id="cLevel"><option>مبتدئ</option><option>متوسط</option><option>متقدم</option></select>
+        </div>
+        <div class="fg"><label>المدة</label><input type="text" id="cDuration" placeholder="مثال: 48 ساعة"></div>
+        <div class="fg"><label for="cAccessType">تصنيف الوصول</label>
+          <select id="cAccessType"><option value="lifetime">وصول مدى الحياة</option><option value="limited">وصول محدود</option></select>
+        </div>
+        <div class="fg"><label>المعلم المسؤول</label><select id="cTeacher"><option value="">بدون تعيين معلم</option></select></div>
+        <div class="fg"><label>تاريخ انتهاء الكورس</label><input type="datetime-local" id="cEndAt"></div>
+        <div class="fg"><label>الإجراء بعد الانتهاء</label>
+          <select id="cExpiredAction"><option value="keep">إبقاء الكورس مع إخفائه من العامة</option><option value="archive">أرشفة الكورس</option><option value="delete">حذف الكورس وبياناته</option></select>
+        </div>
+        <div class="fg"><label>الإيموجي</label><input type="text" id="cEmoji" placeholder="📖"></div>
+        <div class="fg"><label>الشارة (اختياري)</label><input type="text" id="cBadge" placeholder="مثال: الأكثر طلباً"></div>
+        <div class="fg full"><label>وصف الكورس *</label><textarea id="cDesc" placeholder="وصف تفصيلي للكورس..."></textarea></div>
+        <div class="fg full"><label>ماذا يتضمن الكورس؟ (سطر لكل بند)</label><textarea id="cIncludes" placeholder="48 ساعة تعليمية&#10;إشراف تعليمي مجاز&#10;متابعة فردية&#10;شهادة إتمام"></textarea></div>
+        <div class="fg full">
+          <label>صورة/خلفية الكورس (اختياري)</label>
+          <input type="file" id="cImage" accept="image/*" onchange="previewCourseImg(this)">
+          <img id="cImgPreview" style="margin-top:10px;max-height:120px;border-radius:10px;display:none">
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button class="btn-primary" style="padding:12px 32px" onclick="saveCourse()">💾 حفظ الكورس</button>
+        <button class="btn-outline" style="padding:12px 24px" onclick="resetCourseForm()">إلغاء</button>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="admin-sec" id="atab-categories">
+      <h3>إدارة التصنيفات</h3>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px;margin-bottom:18px">
+        <h4 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:16px" id="categoryFormTitle">➕ إضافة تصنيف جديد</h4>
+        <input type="hidden" id="editCategoryId">
+        <div class="form-grid">
+          <div class="fg"><label>اسم التصنيف *</label><input type="text" id="catName" placeholder="مثال: السنة النبوية"></div>
+          <div class="fg"><label>الاسم اللطيف (Slug) *</label><input type="text" id="catSlug" placeholder="sunnah-studies (انجليزي بدون مسافات)"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn-primary" style="padding:11px 24px" onclick="saveCategory()">💾 حفظ التصنيف</button>
+          <button class="btn-outline" style="padding:11px 24px" onclick="resetCategoryForm()">إلغاء</button>
+        </div>
+      </div>
+      <div id="categoriesList"></div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="admin-sec" id="atab-videos">
+      <h3>إدارة فيديوهات الكورسات</h3>
+      <div class="fg">
+        <label>اختر الكورس</label>
+        <select id="videoCourseSelect" onchange="loadCourseVideos()"></select>
+      </div>
+      <div id="videoManageArea" style="display:none">
+        <h4 style="font-family:'Amiri',serif;color:var(--text);margin-bottom:16px;font-size:1.1rem">دروس الكورس</h4>
+        <div class="admin-course-list" id="lessonsList"></div>
+        <div style="margin-top:20px;background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px">
+          <h4 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:16px">➕ إضافة درس جديد</h4>
+          <div class="form-grid">
+            <div class="fg"><label>عنوان الدرس *</label><input type="text" id="lessonTitle" placeholder="مثال: مقدمة في التجويد"></div>
+            <div class="fg"><label>المدة</label><input type="text" id="lessonDur" placeholder="مثال: 45 دقيقة"></div>
+            <div class="fg full"><label>رفع الفيديو *</label>
+              <div class="video-upload-area" id="videoDropArea" onclick="document.getElementById('videoFile').click()" ondragover="handleDrag(event,this)" ondrop="handleDrop(event,this)">
+                <input type="file" id="videoFile" accept="video/*" onchange="handleVideoSelect(this)">
+                <div style="font-size:2.5rem;margin-bottom:8px">🎬</div>
+                <p style="font-weight:700;color:var(--text2)">اضغط هنا لرفع الفيديو أو اسحب الملف</p>
+                <p>يدعم: MP4, MOV, AVI, MKV (حتى 2GB للحفظ المحلي)</p>
+              </div>
+              <div class="uploaded-videos" id="uploadedVideos"></div>
+            </div>
+            <div class="fg full"><label>رابط فيديو خارجي (بديل)</label><input type="text" id="lessonUrl" placeholder="https://www.youtube.com/watch?v=... أو رابط مباشر"></div>
+            <div class="fg full" style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="lessonFree" style="width:auto">
+              <label for="lessonFree" style="margin-bottom:0">درس مجاني (للمعاينة)</label>
+            </div>
+          </div>
+          <button class="btn-primary" style="padding:11px 28px" onclick="saveLesson()">إضافة الدرس</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="admin-sec" id="atab-users">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+        <h3 style="margin-bottom:0">المستخدمون المسجلون</h3>
+        <button class="btn-outline" style="padding:8px 16px" onclick="renderUsers()">🔄 تحديث القائمة</button>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px;margin-bottom:18px">
+        <h4 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:16px">➕ إضافة مستخدم أو أدمن يدويًا</h4>
+        <div class="form-grid">
+          <div class="fg"><label>الاسم الكامل *</label><input type="text" id="adminUserName" placeholder="مثال: أحمد محمد"></div>
+          <div class="fg"><label>اسم المستخدم *</label><input type="text" id="adminUsername" placeholder="مثال: user123"></div>
+          <div class="fg"><label>البريد الإلكتروني *</label><input type="email" id="adminUserEmail" placeholder="user@email.com"></div>
+          <div class="fg"><label>كلمة المرور *</label><input type="password" id="adminUserPassword" placeholder="6+ أحرف مع حرف ورقم ورمز"></div>
+          <div class="fg"><label>الدور *</label>
+            <select id="adminUserRole">
+              <option value="user">مستخدم</option>
+              <option value="student" selected>طالب</option>
+              <option value="teacher">معلم</option>
+              <option value="admin">مدير</option>
+            </select>
+          </div>
+          <div class="fg full">
+            <label>إلحاق مباشر بكورس (اختياري)</label>
+            <select id="adminUserCourse"></select>
+          </div>
+        </div>
+        <p class="auth-note" style="margin-bottom:14px">الحسابات التي ينشئها المدير تُفعّل مباشرة دون إرسال رمز تحقق أو بريد إلكتروني، ويمكن إلحاقها بكورس فورًا.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn-primary" style="padding:11px 24px" onclick="saveAdminUser()">➕ إضافة الحساب</button>
+          <button class="btn-outline" style="padding:11px 24px" onclick="resetAdminUserForm()">إلغاء</button>
+        </div>
+      </div>
+      <div id="usersList"></div>
+    </div>
+    <div class="admin-sec" id="atab-posts">
+      <h3>إدارة المنشورات والإعلانات</h3>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px">
+        <div class="form-grid">
+          <div class="fg"><label>العنوان *</label><input id="postTitle" maxlength="200"></div>
+          <div class="fg">          <label>نوع المحتوى</label>
+          <select id="postType" onchange="togglePostCourse()">
+            <option value="post">منشور</option>
+            <option value="announcement" id="announcementPostOption">إعلان في الهيدر</option>
+          </select>
+          </div>
+          <div class="fg">
+          <label>الكورس المستهدف</label><select id="postCourse"><option value="">منشور عام</option></select></div>
+          <div class="fg full"><label>المحتوى *</label><textarea id="postBody" maxlength="30000"></textarea></div>
+          <div class="fg full" id="postImageField">
+            <label>صورة المنشور (مربعة)</label>
+            <input id="postImage" type="file" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewPostImage()">
+            <small class="auth-note">يفضل استخدام صورة مربعة مثل 1080×1080 للحفاظ على شكل البطاقات.</small>
+            <img id="postImagePreview" class="post-image-preview" alt="معاينة صورة المنشور" style="display:none">
+          </div>
+        </div>
+        <p class="auth-note" style="margin-top:12px">المنشور يظهر للمستخدمين المسجلين، ويمكن تخصيصه لمشتركي كورس محدد. أما الإعلان فيظهر كشريط إخباري عاماً لجميع زوار الموقع.</p>
+        <button class="btn-primary" onclick="publishAdminPost()">نشر المحتوى</button>
+        <div id="adminPostsList" style="margin-top:20px"></div>
+        <div id="teacherStudents" style="margin-top:28px"></div>
+      </div>
+    </div>
+  </div>
+</div>

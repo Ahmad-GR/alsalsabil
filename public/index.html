@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>السلسبيل - منصة الحفظ والتعلم</title>
+<link rel="icon" type="image/png" href="Untitled-1.png">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<!-- Tap Payments will be loaded dynamically. -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loader">
+  <img class="loader-logo" src="Untitled-1.png" alt="السلسبيل">
+  <div class="loader-bar"></div>
+  <div class="loader-txt">السلسبيل</div>
+</div>
+
+<div id="toasts"></div>
+
+<!-- ═══ Tap Checkout Modal ═══ -->
+<div id="tapCheckoutModal" class="modal-ov">
+  <div class="modal-box" style="max-width:900px;max-height:95vh;padding:0;border-radius:8px;overflow:hidden;">
+    <button class="modal-close" onclick="closeTapCheckoutModal()">✕</button>
+    <iframe id="tapCheckoutFrame" src="" style="width:100%;height:90vh;border:none;"></iframe>
+  </div>
+</div>
+
+<!-- ═══ Cliq Checkout Modal ═══ -->
+<div id="cliqCheckoutModal" class="modal-ov">
+  <div class="modal-box" style="max-width:900px;max-height:95vh;padding:0;border-radius:8px;overflow:hidden;background:#f5f5f5;">
+    <button class="modal-close" onclick="closeCliqCheckoutModal()">✕</button>
+    <div style="display:flex;flex-direction:column;height:90vh;background:white;">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg, #2E7D32, #1B5E20);color:white;padding:25px;text-align:center;">
+        <div style="font-size:28px;font-weight:bold;margin-bottom:8px;">🏦 تحويل بنكي آمن</div>
+        <div style="font-size:16px;opacity:0.95;">خدمة الدفع المحلية للعملاء داخل الأردن</div>
+      </div>
+      
+      <!-- Content -->
+      <div style="flex:1;overflow-y:auto;padding:30px 20px;">
+        <div style="max-width:600px;margin:0 auto;text-align:right;">
+          
+          <!-- Bank Information -->
+          <div style="background:linear-gradient(135deg, #f0f7f0, #e8f5e9);border-radius:12px;padding:25px;margin-bottom:25px;border-right:5px solid #2E7D32;">
+            <h3 style="color:#1B5E20;font-size:20px;margin-bottom:20px;">📋 بيانات التحويل البنكي</h3>
+            
+            <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(46,125,50,0.2);">
+              <div style="color:#666;font-size:11px;text-transform:uppercase;margin-bottom:6px;font-weight:600;">اسم البنك</div>
+              <div style="font-size:18px;font-weight:bold;color:#1B5E20;">🏛️ بنك الاتحاد الأردني</div>
+            </div>
+            
+            <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(46,125,50,0.2);">
+              <div style="color:#666;font-size:11px;text-transform:uppercase;margin-bottom:6px;font-weight:600;">الاسم المستعار</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; background:white; padding:8px 12px; border-radius:6px; border:1px solid #ddd;">
+                <div id="cliqAlias" style="font-size:18px;font-weight:bold;color:#2E7D32; font-family:monospace;">AGR02</div>
+                <button onclick="copyCliqAlias()" style="background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; padding: 6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">📋 نسخ</button>
+              </div>
+            </div>
+            
+            <div>
+              <div style="color:#666;font-size:11px;text-transform:uppercase;margin-bottom:6px;font-weight:600;">نوع الحساب</div>
+              <div style="font-size:16px;font-weight:bold;color:#2E7D32;">حساب جاري - Checking Account</div>
+            </div>
+          </div>
+          
+          <!-- Amount Display -->
+          <div style="background:#fff3e0;border-radius:12px;padding:20px;margin-bottom:25px;border-right:5px solid #f57c00;text-align:center;">
+            <div style="color:#666;font-size:13px;margin-bottom:8px;">المبلغ المطلوب</div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:15px;">
+              <div id="cliqAmount" style="font-size:32px;font-weight:bold;color:#e65100;">0 JOD</div>
+              <button onclick="copyCliqAmount()" style="background:#fff3e0; border:1px solid #ffcc80; color:#e65100; padding: 6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">📋 نسخ</button>
+            </div>
+          </div>
+          
+          <!-- Important Notice -->
+          <div style="background:#fff9c4;border-radius:12px;padding:20px;margin-bottom:20px;border-right:5px solid #fbc02d;">
+            <div style="color:#f57f17;font-size:14px;line-height:1.8;text-align:right;">
+              <div style="font-weight:bold;margin-bottom:10px;">⚠️ ملاحظة مهمة جداً</div>
+              <div style="margin-bottom:10px;">
+                بعد إتمام التحويل البنكي، <strong>يرجى إرسال وصل الدفع (البرهان) مع رسالة توضح:</strong>
+              </div>
+              <ul style="margin:10px 0;padding-right:20px;">
+                <li>المبلغ المحول</li>
+                <li>الكورسات المطلوب الالتحاق بها</li>
+                <li>بيانات حسابك في المنصة</li>
+              </ul>
+              <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(245,127,23,0.3);">
+                <strong>إلى:</strong><br>
+                📧 <strong>agr02.project@gmail.com</strong><br>
+                📱 <strong>+962788790701</strong> (واتساب)
+              </div>
+            </div>
+          </div>
+          
+          <!-- Steps -->
+          <div style="background:#e3f2fd;border-radius:12px;padding:20px;border-right:5px solid #1976d2;">
+            <h4 style="color:#0d47a1;margin-bottom:15px;font-size:16px;">✓ خطوات الدفع</h4>
+            <ol style="margin:0;padding-right:20px;color:#1565c0;line-height:2;">
+              <li>انسخ بيانات الحساب أعلاه</li>
+              <li>قم بالتحويل البنكي من حسابك</li>
+              <li>احتفظ بوصل التحويل (البرهان)</li>
+              <li>أرسل الوصل مع بيانات حسابك للايميل أو واتساب</li>
+              <li>سيتم إضافتك للكورس خلال 24 ساعة</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer Button -->
+      <div style="padding:20px;background:#fafafa;border-top:1px solid #eee;text-align:center;">
+        <button onclick="closeCliqCheckoutModal()" style="background:#1B5E20;color:white;border:none;padding:12px 30px;border-radius:6px;font-size:14px;font-weight:bold;cursor:pointer;">
+          ✓ حفظ البيانات وإغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav class="navbar">
+  <div class="nav-brand" onclick="goPage('home')">
+    <img class="brand-logo" src="Untitled-1.png" alt="السلسبيل">
+    <div class="brand-text">
+      <span class="brand-name">السلسبيل</span>
+      <span class="brand-sub">منصة الحفظ والتعلم</span>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a id="nl-home" class="active" onclick="goPage('home')">الرئيسية</a></li>
+    <li><a id="nl-courses" onclick="goPage('courses')">الكورسات</a></li>
+    <li><a id="nl-about" onclick="goPage('about')">من نحن</a></li>
+    <li><a id="nl-contact" onclick="goPage('contact')">تواصل معنا</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="cart-btn" onclick="goPage('cart')">🛒<div class="cart-badge" id="cartBadge">0</div></button>
+    <div id="navUserBtn" onclick="goPage('account')">👤 <span id="navUN"></span></div>
+    <button id="navMessagesBtn" class="btn-outline" style="display:none" onclick="goPage('messages')">💬 الرسائل</button>
+    <div id="notificationControl" class="notification-control" style="display:none">
+      <button id="navNotificationsBtn" class="notification-button" type="button" aria-label="الإشعارات" aria-expanded="false" onclick="toggleNotifications()">🔔<span id="notificationBadge" class="notification-badge" hidden>0</span></button>
+      <div id="notificationPanel" class="notification-panel" hidden>
+        <div class="notification-panel-head"><strong>الإشعارات</strong><button type="button" onclick="loadNotifications()">تحديث</button></div>
+        <div id="notificationList" class="notification-list"></div>
+      </div>
+    </div>
+    <button id="navCommunityBtn" class="btn-outline" style="display:none" onclick="goPage('community')">📰 المنشورات</button>
+    <div id="navAuthBtns">
+      <button class="btn-outline" onclick="goPage('account');showAuth()">دخول</button>
+      <button class="btn-primary" onclick="goPage('account');showReg()">إنشاء حساب</button>
+    </div>
+  </div>
+</nav>
+<div id="announcementTicker" class="announcement-ticker" style="display:none"></div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<main id="app-pages"></main>
+
+<!-- ═══════════════ COURSES ═══════════════ -->
+
+
+<!-- ═══════════════ COURSE DETAIL ═══════════════ -->
+
+
+<!-- ═══════════════ ABOUT ═══════════════ -->
+
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+
+
+<!-- ═══════════════ ACCOUNT ═══════════════ -->
+
+
+<!-- ═══════════════ MESSAGES ═══════════════ -->
+
+
+<!-- ═══════════════ COMMUNITY ═══════════════ -->
+
+
+<!-- ═══════════════ ADMIN ═══════════════ -->
+
+
+<!-- ═══════════════ CART ═══════════════ -->
+
+
+<!-- MODAL -->
+<div class="modal-ov" id="courseModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="courseModalInner"></div>
+  </div>
+</div>
+
+<!-- VERIFY EMAIL MODAL -->
+<div class="modal-ov" id="verifyModal" style="z-index:2100">
+  <div class="modal-box" style="max-width:420px;text-align:center" onclick="event.stopPropagation()">
+    <div style="font-size:2.5rem;margin-bottom:10px">&#128231;</div>
+    <h3 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:8px">&#1578;&#1571;&#1603;&#1610;&#1583; &#1575;&#1604;&#1576;&#1585;&#1610;&#1583; &#1575;&#1604;&#1573;&#1604;&#1603;&#1578;&#1585;&#1608;&#1606;&#1610;</h3>
+    <p style="color:var(--text3);font-size:.9rem;margin-bottom:20px" id="verifyModalMsg">&#1575;&#1603;&#1578;&#1576; &#1575;&#1604;&#1585;&#1605;&#1586; &#1575;&#1604;&#1605;&#1603;&#1608;&#1617;&#1606; &#1605;&#1606; 6 &#1575;&#1585;&#1602;&#1575;&#1605; &#1575;&#1604;&#1584;&#1610; &#1575;&#1615;&#1585;&#1587;&#1604; &#1573;&#1604;&#1609; &#1576;&#1585;&#1610;&#1583;&#1603; &#1575;&#1604;&#1573;&#1604;&#1603;&#1578;&#1585;&#1608;&#1606;&#1610;</p>
+    <input type="text" id="verifyCode" maxlength="6" placeholder="&#9679; &#9679; &#9679; &#9679; &#9679; &#9679;"
+      style="width:100%;text-align:center;font-size:1.8rem;letter-spacing:10px;font-family:monospace;padding:12px;border:2px solid var(--parchment);border-radius:10px;margin-bottom:14px;box-sizing:border-box;background:var(--white);color:var(--text)">
+    <button class="btn-primary" style="width:100%;padding:12px;margin-bottom:10px" onclick="submitVerifyCode()">&#1578;&#1571;&#1603;&#1610;&#1583; &#1575;&#1604;&#1585;&#1605;&#1586;</button>
+    <button class="btn-outline" style="width:100%;padding:10px;font-size:.85rem" onclick="resendVerifyCode()">&#1573;&#1593;&#1575;&#1583;&#1577; &#1573;&#1585;&#1587;&#1575;&#1604; &#1575;&#1604;&#1585;&#1605;&#1586;</button>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-ov" id="forgotModal" style="z-index:2100">
+  <div class="modal-box" style="max-width:420px" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeForgotModal()">&#x2715;</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2.2rem">&#128273;</div>
+      <h3 style="font-family:'Amiri',serif;color:var(--emerald);margin:8px 0 4px">&#1606;&#1587;&#1610;&#1578; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;&#1567;</h3>
+      <p style="color:var(--text3);font-size:.88rem">&#1575;&#1583;&#1582;&#1604; &#1576;&#1585;&#1610;&#1583;&#1603; &#1575;&#1604;&#1573;&#1604;&#1603;&#1578;&#1585;&#1608;&#1606;&#1610; &#1608;&#1587;&#1606;&#1585;&#1587;&#1604; &#1604;&#1603; &#1585;&#1605;&#1586; &#1573;&#1593;&#1575;&#1583;&#1577; &#1575;&#1604;&#1578;&#1593;&#1610;&#1610;&#1606;</p>
+    </div>
+    <div id="forgotStep1">
+      <div class="fg"><label>&#1575;&#1604;&#1576;&#1585;&#1610;&#1583; &#1575;&#1604;&#1573;&#1604;&#1603;&#1578;&#1585;&#1608;&#1606;&#1610;</label><input type="email" id="forgotEmail" placeholder="your@email.com"></div>
+      <button class="btn-primary" style="width:100%;padding:12px" onclick="sendForgotCode()">&#1573;&#1585;&#1587;&#1575;&#1604; &#1585;&#1605;&#1586; &#1575;&#1604;&#1578;&#1593;&#1610;&#1610;&#1606;</button>
+    </div>
+    <div id="forgotStep2" style="display:none">
+      <p style="color:var(--text3);font-size:.88rem;margin-bottom:14px;text-align:center">&#1575;&#1583;&#1582;&#1604; &#1575;&#1604;&#1585;&#1605;&#1586; &#1575;&#1604;&#1584;&#1610; &#1608;&#1589;&#1604; &#1573;&#1604;&#1609; &#1576;&#1585;&#1610;&#1583;&#1603;&#44; &#1579;&#1605; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585; &#1575;&#1604;&#1580;&#1583;&#1610;&#1583;&#1577;</p>
+      <div class="fg"><label>&#1575;&#1604;&#1585;&#1605;&#1586; (6 &#1575;&#1585;&#1602;&#1575;&#1605;)</label>
+        <input type="text" id="resetCode" maxlength="6" placeholder="&#9679; &#9679; &#9679; &#9679; &#9679; &#9679;" style="text-align:center;font-size:1.4rem;letter-spacing:6px;font-family:monospace">
+      </div>
+      <div class="fg"><label>&#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585; &#1575;&#1604;&#1580;&#1583;&#1610;&#1583;&#1577;</label><input type="password" id="resetNewPass" placeholder="6+ &#1575;&#1581;&#1585;&#1601; &#1605;&#1593; &#1581;&#1585;&#1601; &#1608;&#1585;&#1602;&#1605; &#1608;&#1585;&#1605;&#1586;"></div>
+      <div class="fg"><label>&#1578;&#1571;&#1603;&#1610;&#1583; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;</label><input type="password" id="resetNewPass2" placeholder="&#1575;&#1593;&#1583; &#1603;&#1578;&#1575;&#1576;&#1577; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;"></div>
+      <button class="btn-primary" style="width:100%;padding:12px" onclick="submitResetPassword()">&#1578;&#1594;&#1610;&#1610;&#1585; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function loadApplication() {
+  const pageNames = ['home', 'courses', 'course-detail', 'about', 'contact', 'account', 'messages', 'community', 'admin', 'cart'];
+  const container = document.getElementById('app-pages');
+  try {
+    const pages = await Promise.all(pageNames.map(async name => {
+      const response = await fetch('/pages/' + name + '.html');
+      if (!response.ok) throw new Error('Failed to load ' + name + ' page');
+      return response.text();
+    }));
+    container.innerHTML = pages.join('\n');
+    const application = document.createElement('script');
+    application.src = '/app.js';
+    document.body.appendChild(application);
+  } catch (error) {
+    container.textContent = 'تعذر تحميل صفحات المنصة. حدّث الصفحة وحاول مرة أخرى.';
+    console.error('Application page loading failed:', error);
+  }
+})();
+</script>
+</body>
+</html>

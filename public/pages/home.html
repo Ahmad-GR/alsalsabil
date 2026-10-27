@@ -1,0 +1,89 @@
+<div class="page active" id="pg-home">
+  <section class="hero">
+    <div class="hero-orbit" aria-hidden="true">
+      <div class="orbit orbit-one"></div>
+      <div class="orbit orbit-two"></div>
+      <div class="hero-cube cube-one"></div>
+      <div class="hero-cube cube-two"></div>
+      <div class="hero-particle particle-one">✦</div>
+      <div class="hero-particle particle-two">◈</div>
+    </div>
+    <div class="hero-content">
+      <img class="hero-logo"  src="Untitled-1.png" alt="السلسبيل">
+      <div class="hero-kicker"><span></span> تعلم بوعي، احفظ بإتقان <span></span></div>
+      <h1>رحلتك نحو <span>حفظ القرآن الكريم</span><br>تبدأ هنا</h1>
+      <p>منصة تعليمية متخصصة في تعلم حفظ القرآن الكريم والسنة النبوية الشريفة على يد كوادر تعليمية مجازة بسند متصل إلى النبي ﷺ</p>
+      <div class="hero-btns">
+        <button class="btn-gold" onclick="goPage('courses')">ابدأ رحلتك الآن</button>
+        <button class="btn-white" onclick="goPage('about')">اعرف المزيد</button>
+      </div>
+    </div>
+  </section>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num" id="statUsers">—</div><div class="stat-lbl">مستخدم مسجل</div></div>
+    <div class="stat-item"><div class="stat-num" id="statCourses">—</div><div class="stat-lbl">برنامج تعليمي</div></div>
+    <div class="stat-item"><div class="stat-num" id="statHours">—</div><div class="stat-lbl">ساعة محتوى</div></div>
+    <div class="stat-item"><div class="stat-num" id="statRating">—</div><div class="stat-lbl">متوسط تقييم البرامج</div></div>
+  </div>
+
+  <section class="section" style="background:var(--cream)">
+    <div class="section-title">
+      <span class="tag">برامج السلسبيل المميزة</span>
+      <h2>اكتشف <span>برنامجك</span> المناسب</h2>
+      <p>برامج متنوعة لجميع المستويات من البداية حتى الإتقان والتمكن</p>
+    </div>
+    <div class="home-courses" id="homeCourses"></div>
+    <div style="text-align:center;margin-top:36px">
+      <button class="btn-gold" onclick="goPage('courses')">عرض جميع الكورسات</button>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--white)">
+    <div class="section-title">
+      <span class="tag">لماذا السلسبيل؟</span>
+      <h2>مميزات <span>منصتنا</span></h2>
+    </div>
+    <div class="values-grid">
+      <div class="value-card"><div class="value-icon">🎓</div><div class="value-title">كوادر تعليمية مجازة</div><div class="value-desc">يقدم المحتوى نخبة من الكوادر التعليمية المجازة بسند متصل إلى النبي ﷺ</div></div>
+      <div class="value-card"><div class="value-icon">📱</div><div class="value-title">تعلم من أي مكان</div><div class="value-desc">محتوى رقمي يمكنك الوصول إليه في أي وقت ومن أي مكان</div></div>
+      <div class="value-card"><div class="value-icon">👥</div><div class="value-title">متابعة فردية</div><div class="value-desc">متابعة شخصية وتصحيح مستمر لضمان التقدم الصحيح</div></div>
+      <div class="value-card"><div class="value-icon">🏆</div><div class="value-title">شهادات معتمدة</div><div class="value-desc">شهادات إتمام معتمدة عند الانتهاء من كل برنامج</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-logo">
+          <img src="Untitled-1.png" alt="السلسبيل">
+          <span class="brand-name-f">السلسبيل</span>
+        </div>
+        <p>منصة تعليمية متخصصة في حفظ القرآن الكريم والسنة النبوية الشريفة على يد كوادر تعليمية مجازة بسند متصل إلى النبي ﷺ.</p>
+      </div>
+      <div class="footer-col">
+        <h4>الكورسات</h4>
+        <div id="footerCategories">
+          <!-- سيتم تحميل التصنيفات الديناميكية هنا -->
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>المنصة</h4>
+        <a onclick="goPage('about')">من نحن</a>
+        <a onclick="goPage('contact')">تواصل معنا</a>
+        <a onclick="goPage('account')">حسابي</a>
+        <a onclick="goPage('account');showAdmin()">لوحة الإدارة</a>
+      </div>
+      <div class="footer-col">
+        <h4>تواصل معنا</h4>
+        <a href="mailto:agr02.project@gmail.com">📧 agr02.project@gmail.com</a>
+        <a href="tel:+962788790701">📞 +962788790701</a>
+        <a href="https://wa.me/962788790701" target="_blank" rel="noopener noreferrer">💬 واتساب</a>
+        <a>📍 الأردن </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 السلسبيل — جميع الحقوق محفوظة</p>
+      <p>بُني بحب لخدمة كتاب الله وسنة نبيه الكريم ❤️</p>
+    </div>
+  </footer>
+</div>
