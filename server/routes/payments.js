@@ -207,7 +207,7 @@ router.post('/webhook-tap', express.json(), async (req, res) => {
 
       const expectedAmount = Number(dbOrder.total_amount);
       const receivedAmount = Number(charge.amount);
-      if (String(charge.currency || '').toUpperCase() !== 'SAR'
+      if (String(charge.currency || '').toUpperCase() !== 'USD'
         || !Number.isFinite(receivedAmount)
         || Math.abs(receivedAmount - expectedAmount) > 0.001) {
         return res.status(400).json({ error: 'بيانات مبلغ الدفع لا تطابق الطلب' });
