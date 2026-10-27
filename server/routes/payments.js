@@ -92,7 +92,7 @@ router.post('/create-checkout', protect, async (req, res) => {
 
     const lineItems = courses.map(c => ({
       price_data: {
-        currency: 'jod',
+        currency: 'usd',
         product_data: {
           name:        c.title,
           description: `${c.category} • ${c.level}`,
@@ -258,7 +258,7 @@ router.post('/create-tap-charge', protect, async (req, res) => {
 
     const charge = await createTapCharge({
       amount: totalAmount,
-      currency: 'JOD',
+      currency: 'USD',
       customerEmail: req.user.email,
       description: `Purchase of ${courses.length} course(s)`,
       orderId: orderReference,
