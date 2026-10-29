@@ -282,7 +282,24 @@ if(!AUTH_TOKEN&&CU){
 }
 
 /* ═══════════ NAV ═══════════ */
+function toggleMobileNav(){
+  const links=document.getElementById('navLinks');
+  const button=document.getElementById('mobileMenuBtn');
+  if(!links||!button)return;
+  const open=links.classList.toggle('open');
+  button.classList.toggle('open',open);
+  button.setAttribute('aria-expanded',String(open));
+  button.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة');
+}
+function closeMobileNav(){
+  const links=document.getElementById('navLinks');
+  const button=document.getElementById('mobileMenuBtn');
+  links?.classList.remove('open');
+  button?.classList.remove('open');
+  button?.setAttribute('aria-expanded','false');
+}
 function goPage(n){
+  closeMobileNav();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
   document.getElementById('pg-'+n).classList.add('active');
