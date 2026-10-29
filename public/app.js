@@ -185,13 +185,17 @@ async function startCliqCheckout() {
     }
 
     // Make API request to create order record
-    const { orderId } = await apiRequest('/payments/create-cliq-charge', {
+    const { orderId, checkoutUrl } = await apiRequest('/payments/create-cliq-charge', {
       method: 'POST',
       body: { courseIds: cart },
     });
 
-    // Show success message
-    toast(`تم إنشاء طلب الدفع. رقم الطلب: ${orderId}`, 'gold');
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+      return;
+    }
+
+    toast(`تم إنشاء طلب الدفع. رقم الطلب: ${orderId}. سيُفعّل الاشتراك بعد تأكيد الدفع.`, 'gold');
 
   } catch (err) {
     closeCliqCheckoutModal();
