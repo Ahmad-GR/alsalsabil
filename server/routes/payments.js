@@ -4,7 +4,7 @@ const { protect } = require('../middleware/auth');
 const { createTapCharge, verifyTapWebhookSignature } = require('../utils/tap');
 const { createCliqCharge } = require('../utils/cliq');
 const { getDb, runInTransaction, nowIso } = require('../lib/postgres');
-const { getUserById, createEnrollmentForUser } = require('./site');
+const { getUserById } = require('./site');
 
 function getCourseRows({ publishedOnly = false, ids = null } = {}) {
   const db = getDb();
@@ -39,22 +39,27 @@ if (!process.env.TAP_SECRET_KEY && !process.env.TAP_SECRET) {
  * Enrolls a user in the courses associated with a paid order.
  * @param {number} orderId - The internal SQLite ID of the order.
  */
-async function enrollUserInCourses(orderId) {
+function enrollUserInCourses(orderId) {
   const db = getDb();
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-  if (!order) return;
+  if (!order) return 0;
 
   const orderItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
+  let enrolled = 0;
 
-  runInTransaction((db) => {
+  runInTransaction((transactionDb) => {
+    const timestamp = nowIso();
     orderItems.forEach(item => {
-      createEnrollmentForUser(db, order.user_id, item.course_id, {
-        orderPrefix: 'ENROLL',
-        totalAmount: 0,
-        status: 'paid'
-      });
+      if (!item.course_id) return;
+      const existing = transactionDb.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?')
+        .get(order.user_id, item.course_id);
+      if (existing) return;
+      transactionDb.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`) 
+        .run(order.user_id, item.course_id, order.id, timestamp, timestamp);
+      enrolled += 1;
     });
   });
+  return enrolled;
 }
 
 /**
@@ -92,7 +97,7 @@ router.post('/create-checkout', protect, async (req, res) => {
 
     const lineItems = courses.map(c => ({
       price_data: {
-        currency: 'usd',
+        currency: 'jod',
         product_data: {
           name:        c.title,
           description: `${c.category} • ${c.level}`,
@@ -161,16 +166,34 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (req, res
     }
 
     try {
-      const result = getDb().prepare("UPDATE orders SET status = 'paid', stripe_payment_intent = ? WHERE id = ? AND status = 'pending'")
-        .run(session.payment_intent, orderId);
+      let becamePaid = false;
+      runInTransaction((db) => {
+        const result = db.prepare("UPDATE orders SET status = 'paid', stripe_payment_intent = ? WHERE id = ? AND status = 'pending'")
+          .run(session.payment_intent, orderId);
+        becamePaid = result.changes > 0;
+        if (!becamePaid) return;
 
-      if (result.changes > 0) {
-        await enrollUserInCourses(orderId);
+        const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+        const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(orderId);
+        const timestamp = nowIso();
+        items.forEach(item => {
+          if (!item.course_id) return;
+          const existing = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?')
+            .get(order.user_id, item.course_id);
+          if (!existing) {
+            db.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`) 
+              .run(order.user_id, item.course_id, orderId, timestamp, timestamp);
+          }
+        });
+      });
+
+      if (becamePaid) {
         const order = getDb().prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
         sendConfirmationEmail(order).catch(console.error);
       }
     } catch (err) {
       console.error('Stripe webhook processing error:', err);
+      return res.status(500).send('Webhook processing failed');
     }
   }
 
@@ -207,7 +230,7 @@ router.post('/webhook-tap', express.json(), async (req, res) => {
 
       const expectedAmount = Number(dbOrder.total_amount);
       const receivedAmount = Number(charge.amount);
-      if (String(charge.currency || '').toUpperCase() !== 'USD'
+      if (String(charge.currency || '').toUpperCase() !== 'JOD'
         || !Number.isFinite(receivedAmount)
         || Math.abs(receivedAmount - expectedAmount) > 0.001) {
         return res.status(400).json({ error: 'بيانات مبلغ الدفع لا تطابق الطلب' });
@@ -258,12 +281,12 @@ router.post('/create-tap-charge', protect, async (req, res) => {
 
     const charge = await createTapCharge({
       amount: totalAmount,
-      currency: 'USD',
+      currency: 'JOD',
       customerEmail: req.user.email,
       description: `Purchase of ${courses.length} course(s)`,
       orderId: orderReference,
-      returnUrl: `${process.env.CLIENT_URL || 'http://localhost:5000'}?payment=tap-success`,
-      postUrl: `${process.env.CLIENT_URL || 'http://localhost:5000'}?payment=tap-callback`,
+      returnUrl: `${process.env.CLIENT_URL || 'http://localhost:5001'}?payment=tap-success&order=${encodeURIComponent(orderReference)}`,
+      postUrl: process.env.TAP_POST_URL || `${process.env.SERVER_URL || 'http://localhost:5001'}/api/payments/webhook-tap`,
       metadata: {
         orderId: orderReference,
         app: 'hifz-platform',
@@ -290,6 +313,29 @@ router.get('/verify-session/:sessionId', protect, async (req, res) => {
     const items = db.prepare(`
       SELECT course_title, price_at_time FROM order_items WHERE order_id = ?
     `).all(order.id);
+
+    if (session.payment_status === 'paid' && order.status !== 'paid') {
+      let becamePaid = false;
+      runInTransaction((db) => {
+        const result = db.prepare("UPDATE orders SET status = 'paid', stripe_payment_intent = ? WHERE id = ? AND status = 'pending'")
+          .run(session.payment_intent || null, order.id);
+        becamePaid = result.changes > 0;
+        if (becamePaid) {
+          const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
+          const timestamp = nowIso();
+          items.forEach(item => {
+            if (!item.course_id) return;
+            const existing = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?')
+              .get(order.user_id, item.course_id);
+            if (!existing) {
+              db.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`) 
+                .run(order.user_id, item.course_id, order.id, timestamp, timestamp);
+            }
+          });
+        }
+      });
+      if (becamePaid) order.status = 'paid';
+    }
 
     res.json({
       paymentStatus: session.payment_status,
@@ -334,11 +380,25 @@ router.post('/create-cliq-charge', protect, async (req, res) => {
       return sqliteOrderId;
     });
 
-    getDb().prepare('UPDATE orders SET payment_reference = ? WHERE id = ?').run(orderReference, orderId);
+    const charge = await createCliqCharge({
+      amount: totalAmount,
+      currency: 'JOD',
+      customerEmail: req.user.email,
+      customerPhone: req.user.phone,
+      description: `Purchase of ${courses.length} course(s)`,
+      orderId: orderReference,
+      returnUrl: `${process.env.CLIENT_URL || 'http://localhost:5001'}?payment=cliq-success&order=${encodeURIComponent(orderReference)}`,
+      metadata: { orderId: orderReference, app: 'hifz-platform' },
+    });
 
-    res.json({ 
-      success: true, 
-      orderId: orderReference 
+    getDb().prepare('UPDATE orders SET payment_reference = ? WHERE id = ?')
+      .run(charge.transactionId || orderReference, orderId);
+
+    res.json({
+      success: true,
+      orderId: orderReference,
+      checkoutUrl: charge.checkoutUrl,
+      transactionId: charge.transactionId,
     });
   } catch (err) {
     console.error('Cliq create charge error:', err.message);
