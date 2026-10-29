@@ -706,4 +706,99 @@ footer::before{
 /* Verify & Forgot Modals */
 #verifyModal .modal-box,#forgotModal .modal-box{padding:36px;}
 #verifyCode,#resetCode{outline:none;}
-#verifyCode:focus,#resetCode:focus{border-color:var(--emerald);}
+#verifyCode:focus,#resetCode:focus{border-color:var(--emerald);}\n
+/* Responsive navigation and device-safe layouts */
+.mobile-menu-btn{display:none;align-items:center;justify-content:center;width:42px;height:42px;border:2px solid var(--emerald);border-radius:50%;background:var(--white);color:var(--emerald);font-size:1.25rem;cursor:pointer;flex:0 0 auto;}
+.mobile-menu-btn.open{background:var(--emerald);color:#fff;}
+@media(max-width:900px){
+  .navbar{height:72px;padding:0 10px;gap:6px;}
+  .nav-brand{gap:7px;min-width:0;}
+  .brand-text{min-width:0;}
+  .brand-name{font-size:1.05rem;white-space:nowrap;}
+  .brand-sub{display:none;}
+  :root{--nav-logo-size:48px;--nav-logo-padding:4px;}
+  .mobile-menu-btn{display:inline-flex;order:-1;}
+  .nav-links{position:absolute;top:72px;right:12px;left:12px;display:none;flex-direction:column;gap:4px;padding:12px;background:rgba(255,255,255,.98);border:1px solid var(--parchment);border-radius:16px;box-shadow:var(--depth);z-index:600;}
+  .nav-links.open{display:flex;}
+  .nav-links li{width:100%;}
+  .nav-links a{display:block;text-align:center;width:100%;padding:12px 10px;border-radius:10px;}
+  .nav-actions{gap:4px;min-width:0;}
+  .nav-actions>.btn-outline,.nav-actions>.btn-primary{padding:7px 9px;font-size:.78rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #navMessagesBtn,#navCommunityBtn{display:none!important;}
+  #navUserBtn{max-width:82px;padding:7px 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .notification-panel{position:fixed!important;right:10px!important;left:10px!important;top:82px!important;width:auto!important;}
+  .hero{min-height:calc(100svh - 72px);padding:50px 16px;}
+  .hero h1{font-size:clamp(2rem,9vw,3rem)!important;}
+  .hero p{font-size:1rem!important;}
+  .home-courses,.courses-grid{grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;padding-inline:0;}
+  .stats-bar{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .section{padding:40px 16px;}
+  .section-title h2{font-size:1.55rem!important;}
+  .course-detail,.cd-header{min-width:0;}
+  .cd-header{grid-template-columns:minmax(0,1fr)!important;gap:20px!important;}
+  .cd-thumb{height:auto!important;min-height:220px;}
+  .cd-includes{grid-template-columns:1fr!important;}
+  .contact-grid,.auth-grid,.cart-grid,.dash-grid,.footer-grid{grid-template-columns:minmax(0,1fr)!important;}
+  .auth-grid{gap:0;}
+  .auth-box{padding:20px!important;}
+  .form-grid{grid-template-columns:minmax(0,1fr)!important;}
+  .cart-wrap,.courses-page-wrap,.admin-wrap,.account-wrap,.course-detail,.contact-wrap{padding:20px 12px!important;}
+  .cart-summary{position:static!important;}
+  .ci{padding:14px 12px!important;gap:8px!important;}
+  .cart-grid{gap:18px!important;}
+  .dash-grid{border-radius:12px!important;}
+  .dash-sb{display:flex!important;overflow-x:auto;gap:6px;}
+  .dash-sb button{flex:1 0 auto;white-space:nowrap;}
+  .d-stats{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .messenger{height:calc(100svh - 150px)!important;min-height:420px!important;border-radius:12px!important;}
+  .footer-grid{gap:24px!important;}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center;}
+  .modal-ov{padding:10px!important;}
+  .modal-box{max-height:92svh!important;border-radius:14px!important;}
+  #tapCheckoutModal .modal-box,#cliqCheckoutModal .modal-box{max-width:100%!important;max-height:94svh!important;}
+  #tapCheckoutFrame{height:calc(94svh - 8px)!important;min-height:420px!important;}
+  table{display:block;width:100%;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+  input,select,textarea,button{max-width:100%;}
+}
+@media(max-width:560px){
+  :root{--nav-logo-size:42px;--hero-logo-size:100px;--about-logo-size:110px;}
+  .navbar{height:64px!important;}
+  .nav-links{top:64px!important;}
+  .brand-name{font-size:.92rem!important;}
+  .mobile-menu-btn{width:38px;height:38px;font-size:1.05rem;}
+  .cart-btn{width:38px;height:38px;font-size:1rem;}
+  .nav-actions{gap:2px;}
+  #navAuthBtns{display:flex;gap:2px;}
+  #navAuthBtns .btn-outline{display:none;}
+  #navAuthBtns .btn-primary{font-size:.72rem;padding:7px 8px;max-width:72px;}
+  #navUserBtn{max-width:64px;font-size:.72rem;}
+  .hero{min-height:calc(100svh - 64px);padding:38px 12px;}
+  .hero-actions{flex-direction:column!important;width:100%;align-items:stretch!important;}
+  .hero-actions a,.hero-actions button{width:100%!important;}
+  .stats-bar{width:calc(100% - 20px)!important;margin-top:-12px!important;}
+  .stat-item{padding:14px 8px!important;}
+  .stat-num{font-size:1.3rem!important;}
+  .stat-label{font-size:.72rem!important;}
+  .section{padding:34px 12px!important;}
+  .home-courses,.courses-grid{grid-template-columns:1fr!important;}
+  .course-card{max-width:none!important;}
+  .card-thumb{height:190px!important;}
+  .courses-filter{justify-content:flex-start!important;overflow-x:auto;padding-bottom:8px;}
+  .filter-btn{white-space:nowrap;flex:0 0 auto;}
+  .values-grid,.team-grid{grid-template-columns:1fr!important;}
+  .form-grid{grid-template-columns:1fr!important;}
+  .d-stats{grid-template-columns:1fr!important;}
+  .modal-inner{padding:22px 16px!important;}
+  #verifyModal .modal-box,#forgotModal .modal-box{padding:24px 16px!important;margin:0!important;}
+  #cliqCheckoutModal .modal-box>div{height:calc(94svh - 4px)!important;}
+  #cliqCheckoutModal .modal-box>div>div:nth-child(2){padding:16px 12px!important;}
+  #cliqCheckoutModal [style*="font-size:32px"]{font-size:26px!important;}
+  .footer-grid{grid-template-columns:1fr!important;}
+  .toast{max-width:calc(100vw - 24px);white-space:normal;text-align:center;font-size:.82rem;}
+}
+@media(max-height:500px) and (orientation:landscape){
+  .modal-ov{padding:6px!important;align-items:flex-start!important;}
+  .modal-box{max-height:96svh!important;}
+  #tapCheckoutFrame{height:94svh!important;min-height:0!important;}
+  #cliqCheckoutModal .modal-box>div{height:92svh!important;}
+}\n
