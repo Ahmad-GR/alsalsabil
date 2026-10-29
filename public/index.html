@@ -127,12 +127,13 @@
       <span class="brand-sub">منصة الحفظ والتعلم</span>
     </div>
   </div>
-  <ul class="nav-links">
-    <li><a id="nl-home" class="active" onclick="goPage('home')">الرئيسية</a></li>
-    <li><a id="nl-courses" onclick="goPage('courses')">الكورسات</a></li>
-    <li><a id="nl-about" onclick="goPage('about')">من نحن</a></li>
-    <li><a id="nl-contact" onclick="goPage('contact')">تواصل معنا</a></li>
+  <ul class="nav-links" id="navLinks">
+    <li><a id="nl-home" class="active" onclick="goPage('home');closeMobileNav()">الرئيسية</a></li>
+    <li><a id="nl-courses" onclick="goPage('courses');closeMobileNav()">الكورسات</a></li>
+    <li><a id="nl-about" onclick="goPage('about');closeMobileNav()">من نحن</a></li>
+    <li><a id="nl-contact" onclick="goPage('contact');closeMobileNav()">تواصل معنا</a></li>
   </ul>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="فتح القائمة" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
   <div class="nav-actions">
     <button class="cart-btn" onclick="goPage('cart')">🛒<div class="cart-badge" id="cartBadge">0</div></button>
     <div id="navUserBtn" onclick="goPage('account')">👤 <span id="navUN"></span></div>
