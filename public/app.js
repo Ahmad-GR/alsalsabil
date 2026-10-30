@@ -724,7 +724,9 @@ function updNav(){
     ab.style.display='flex';ub.classList.remove('show');messages.style.display='none';community.style.display='none';notifications.style.display='none';
     document.getElementById('mobileMessagesLink')?.classList.remove('visible');
     document.getElementById('mobileCommunityLink')?.classList.remove('visible');
-    document.getElementById('notificationPanel').hidden=true;
+    const notificationPanel=document.getElementById('notificationPanel');
+    notificationPanel.hidden=true;
+    setNotificationPanelMobilePosition(false);
     document.body.classList.remove('notifications-open');
     NOTIFICATION_AUTO_OPENED=false;
     if(NOTIFICATION_POLL_TIMER){clearInterval(NOTIFICATION_POLL_TIMER);NOTIFICATION_POLL_TIMER=null;}
@@ -1027,6 +1029,7 @@ async function loadNotifications(){
       const panel=document.getElementById('notificationPanel');
       const button=document.getElementById('navNotificationsBtn');
       if(panel&&button){
+        setNotificationPanelMobilePosition(true);
         panel.hidden=false;
         button.setAttribute('aria-expanded','true');
         if(window.matchMedia('(max-width:900px)').matches)document.body.classList.add('notifications-open');
@@ -1038,6 +1041,17 @@ async function loadNotifications(){
         <strong>${notification.is_read?'':`<span class="notification-unread-label">غير مقروء</span>`}${escapeHtml(notification.title)}</strong><span>${escapeHtml(notification.body||'')}${notification.created_at?` · ${escapeHtml(new Date(notification.created_at).toLocaleDateString('ar'))}`:''}</span>
       </button>`).join(''):'<div class="notification-empty">لا توجد إشعارات جديدة</div>';
   }catch(error){toast(error.message,'err');}
+}
+
+function setNotificationPanelMobilePosition(open){
+  const panel=document.getElementById('notificationPanel');
+  const control=document.getElementById('notificationControl');
+  if(!panel||!control)return;
+  if(open&&window.matchMedia('(max-width:900px)').matches){
+    if(panel.parentElement!==document.body)document.body.appendChild(panel);
+  }else if(panel.parentElement===document.body){
+    control.appendChild(panel);
+  }
 }
 
 async function markAllNotificationsRead(){
@@ -1053,6 +1067,8 @@ function toggleNotifications(){
   const panel=document.getElementById('notificationPanel');
   const button=document.getElementById('navNotificationsBtn');
   panel.hidden=!panel.hidden;
+  if(!panel.hidden)setNotificationPanelMobilePosition(true);
+  else setNotificationPanelMobilePosition(false);
   button.setAttribute('aria-expanded',String(!panel.hidden));
   document.body.classList.toggle('notifications-open',window.matchMedia('(max-width:900px)').matches&&!panel.hidden);
   if(!panel.hidden)loadNotifications();
