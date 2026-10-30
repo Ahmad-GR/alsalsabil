@@ -142,8 +142,8 @@
     <button id="navMessagesBtn" class="btn-outline" style="display:none" onclick="goPage('messages')">💬 الرسائل</button>
     <div id="notificationControl" class="notification-control" style="display:none">
       <button id="navNotificationsBtn" class="notification-button" type="button" aria-label="الإشعارات" aria-expanded="false" aria-live="polite" onclick="toggleNotifications()">🔔<span id="notificationBadge" class="notification-badge" aria-label="عدد الإشعارات غير المقروءة" hidden>0</span></button>
-      <div id="notificationPanel" class="notification-panel" hidden>
-        <div class="notification-panel-head"><strong>الإشعارات</strong><div class="notification-panel-actions"><button type="button" onclick="loadNotifications()">تحديث</button><button type="button" onclick="markAllNotificationsRead()">تحديد الكل كمقروء</button></div></div>
+      <div id="notificationPanel" class="notification-panel" role="dialog" aria-modal="true" aria-labelledby="notificationPanelTitle" hidden>
+        <div class="notification-panel-head"><strong id="notificationPanelTitle">الإشعارات</strong><div class="notification-panel-actions"><button type="button" onclick="loadNotifications()">تحديث</button><button type="button" onclick="markAllNotificationsRead()">تحديد الكل كمقروء</button><button type="button" class="notification-close" aria-label="إغلاق الإشعارات" onclick="toggleNotifications()">✕</button></div></div>
         <div id="notificationList" class="notification-list"></div>
       </div>
     </div>
