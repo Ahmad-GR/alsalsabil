@@ -588,7 +588,14 @@ function removeFromCart(id){
   updCartBadge();
   renderCart();
 }
-function updCartBadge(){document.getElementById('cartBadge').textContent=cart.length;}
+function updCartBadge(){
+  const badge=document.getElementById('cartBadge');
+  if(!badge)return;
+  const count=cart.length;
+  badge.textContent=count;
+  badge.hidden=count<1;
+  badge.setAttribute('aria-label',count?`عدد العناصر في السلة: ${count}`:'السلة فارغة');
+}
 function cartTotal(){return cart.reduce((s,id)=>{const c=COURSES.find(x=>x.id===id);return s+(c?c.price:0);},0);}
 
 function renderCart(){
