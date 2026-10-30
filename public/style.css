@@ -55,7 +55,7 @@ body{background:var(--cream);color:var(--text);font-family:'Cairo',sans-serif;ov
 .btn-outline:hover{background:var(--emerald);color:#fff;}
 .btn-primary{background:linear-gradient(135deg,var(--emerald),var(--emerald2));color:#fff;border:none;padding:8px 20px;border-radius:50px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(26,107,74,.3);}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,107,74,.4);}
-.cart-btn{position:relative;background:var(--gold);color:#fff;border:none;width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer;transition:all .2s;}
+.cart-btn{position:relative;background:var(--gold);color:#fff;border:none;width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer;transition:all .2s;overflow:visible!important;}
 .cart-btn:hover{transform:scale(1.05);}
 .cart-badge{position:absolute;top:-4px;right:-4px;background:#c0392b;color:#fff;width:18px;height:18px;border-radius:50%;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
 #navUserBtn{display:none;align-items:center;gap:8px;background:var(--emerald);color:#fff;border:none;padding:8px 16px;border-radius:50px;font-family:'Cairo',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;}
