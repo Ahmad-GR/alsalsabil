@@ -706,9 +706,11 @@ footer::before{
 /* Verify & Forgot Modals */
 #verifyModal .modal-box,#forgotModal .modal-box{padding:36px;}
 #verifyCode,#resetCode{outline:none;}
-#verifyCode:focus,#resetCode:focus{border-color:var(--emerald);}\n
+#verifyCode:focus,#resetCode:focus{border-color:var(--emerald);}
+
 /* Responsive navigation and device-safe layouts */
-.mobile-menu-btn{display:none;align-items:center;justify-content:center;width:42px;height:42px;border:2px solid var(--emerald);border-radius:50%;background:var(--white);color:var(--emerald);font-size:1.25rem;cursor:pointer;flex:0 0 auto;}
+.mobile-menu-btn{display:none;align-items:center;justify-content:center;width:42px;height:42px;border:2px solid var(--emerald);border-radius:50%;background:var(--white);color:var(--emerald);font-size:1.25rem;cursor:pointer;flex:0 0 auto;} 
+.mobile-nav-feature{display:none;}
 .mobile-menu-btn.open{background:var(--emerald);color:#fff;}
 @media(max-width:900px){
   .navbar{height:72px;padding:0 10px;gap:6px;}
@@ -722,6 +724,8 @@ footer::before{
   .nav-links.open{display:flex;}
   .nav-links li{width:100%;}
   .nav-links a{display:block;text-align:center;width:100%;padding:12px 10px;border-radius:10px;}
+  .mobile-nav-feature{display:none!important;}
+  .mobile-nav-feature.visible{display:list-item!important;}
   .nav-actions{gap:4px;min-width:0;}
   .nav-actions>.btn-outline,.nav-actions>.btn-primary{padding:7px 9px;font-size:.78rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   #navMessagesBtn,#navCommunityBtn{display:none!important;}
@@ -743,6 +747,9 @@ footer::before{
   .auth-box{padding:20px!important;}
   .form-grid{grid-template-columns:minmax(0,1fr)!important;}
   .cart-wrap,.courses-page-wrap,.admin-wrap,.account-wrap,.course-detail,.contact-wrap{padding:20px 12px!important;}
+  .admin-wrap{width:100%!important;max-width:none!important;margin:0!important;}
+  .admin-tabs{width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin-bottom:20px!important;overflow:visible!important;padding:5px!important;}
+  .atab{min-width:0!important;padding:10px 5px!important;text-align:center!important;font-size:.76rem!important;line-height:1.25!important;border-radius:8px!important;white-space:normal!important;}
   .cart-summary{position:static!important;}
   .ci{padding:14px 12px!important;gap:8px!important;}
   .cart-grid{gap:18px!important;}
@@ -796,9 +803,16 @@ footer::before{
   .footer-grid{grid-template-columns:1fr!important;}
   .toast{max-width:calc(100vw - 24px);white-space:normal;text-align:center;font-size:.82rem;}
 }
+@media(min-width:901px){
+  #mobileMenuBtn{display:none!important;}
+  .mobile-nav-feature{display:none!important;}
+}
+@media(max-width:560px){
+  .admin-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
 @media(max-height:500px) and (orientation:landscape){
   .modal-ov{padding:6px!important;align-items:flex-start!important;}
   .modal-box{max-height:96svh!important;}
   #tapCheckoutFrame{height:94svh!important;min-height:0!important;}
   #cliqCheckoutModal .modal-box>div{height:92svh!important;}
-}\n
+}
