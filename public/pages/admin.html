@@ -4,13 +4,13 @@
     <p style="color:rgba(255,255,255,.7)">إدارة الكورسات والمحتوى التعليمي</p>
   </div>
   <div class="admin-wrap">
-    <div class="admin-tabs">
-      <div class="atab active" onclick="showATab('list',this)">📋 الكورسات</div>
-      <div class="atab" onclick="showATab('add',this)">➕ إضافة كورس</div>
-      <div class="atab" onclick="showATab('videos',this)">🎬 إدارة الفيديوهات</div>
-      <div class="atab" onclick="showATab('categories',this)">🏷️ التصنيفات</div>
-      <div class="atab" onclick="showATab('users',this)">👥 المستخدمون</div>
-        <div class="atab" onclick="showATab('posts',this)">📝 المنشورات</div>
+    <div class="admin-tabs" role="tablist" aria-label="أقسام لوحة الإدارة">
+      <button type="button" class="atab active" role="tab" aria-controls="atab-list" aria-selected="true" data-admin-tab="list" onclick="showATab('list',this)">📋 الكورسات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-add" aria-selected="false" data-admin-tab="add" onclick="showATab('add',this)">➕ إضافة كورس</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-videos" aria-selected="false" data-admin-tab="videos" onclick="showATab('videos',this)">🎬 إدارة الفيديوهات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-categories" aria-selected="false" data-admin-tab="categories" onclick="showATab('categories',this)">🏷️ التصنيفات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-users" aria-selected="false" data-admin-tab="users" onclick="showATab('users',this)">👥 المستخدمون</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-posts" aria-selected="false" data-admin-tab="posts" onclick="showATab('posts',this)">📝 المنشورات</button>
     </div>
 
     <!-- LIST -->
