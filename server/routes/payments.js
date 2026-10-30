@@ -2,7 +2,7 @@ const express = require('express');
 const stripe  = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { protect } = require('../middleware/auth');
 const { createTapCharge, verifyTapWebhookSignature } = require('../utils/tap');
-const { createCliqCharge } = require('../utils/cliq');
+// Cliq is presented as a manual bank-transfer option; no external Cliq API credentials are required.
 const { getDb, runInTransaction, nowIso } = require('../lib/postgres');
 const { getUserById } = require('./site');
 
@@ -396,25 +396,19 @@ router.post('/create-cliq-charge', protect, async (req, res) => {
       return sqliteOrderId;
     });
 
-    const charge = await createCliqCharge({
-      amount: totalAmount,
-      currency: 'JOD',
-      customerEmail: req.user.email,
-      customerPhone: req.user.phone,
-      description: `Purchase of ${courses.length} course(s)`,
-      orderId: orderReference,
-      returnUrl: `${getPublicUrl(req, 'client')}?payment=cliq-success&order=${encodeURIComponent(orderReference)}`,
-      metadata: { orderId: orderReference, app: 'hifz-platform' },
-    });
-
-    getDb().prepare('UPDATE orders SET payment_reference = ? WHERE id = ?')
-      .run(charge.transactionId || orderReference, orderId);
+    getDb().prepare("UPDATE orders SET payment_reference = ?, status = 'pending' WHERE id = ?")
+      .run(orderReference, orderId);
 
     res.json({
       success: true,
+      manualPayment: true,
       orderId: orderReference,
-      checkoutUrl: charge.checkoutUrl,
-      transactionId: charge.transactionId,
+      paymentAmount: Number((totalAmount * 0.71).toFixed(2)),
+      paymentCurrency: 'JOD',
+      bankName: process.env.CLIQ_BANK_NAME || 'البنك العربي',
+      alias: process.env.CLIQ_ALIAS || 'AHGR',
+      checkoutUrl: null,
+      transactionId: orderReference,
     });
   } catch (err) {
     console.error('Cliq create charge error:', err.message);
