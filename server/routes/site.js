@@ -968,6 +968,12 @@ router.get('/notifications', protect, (req, res) => {
   }
 });
 
+router.patch('/notifications/read-all', protect, (req, res) => {
+  getDb().prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0')
+    .run(req.user.id);
+  return res.json({ success: true });
+});
+
 router.patch('/notifications/:id/read', protect, (req, res) => {
   const result = getDb().prepare('UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?')
     .run(Number(req.params.id), req.user.id);
