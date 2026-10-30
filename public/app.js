@@ -278,6 +278,7 @@ let CU=JSON.parse(localStorage.getItem('hf_user')||'null');
 let currentVideoFile=null;
 let editingLesson=null;
 let NOTIFICATION_POLL_TIMER=null;
+let NOTIFICATION_AUTO_OPENED=false;
 const LOCAL_VIDEO_LIMIT_MB=2000;
 if(!AUTH_TOKEN&&CU){
   CU=null;
@@ -724,6 +725,7 @@ function updNav(){
     document.getElementById('mobileMessagesLink')?.classList.remove('visible');
     document.getElementById('mobileCommunityLink')?.classList.remove('visible');
     document.getElementById('notificationPanel').hidden=true;
+    NOTIFICATION_AUTO_OPENED=false;
     if(NOTIFICATION_POLL_TIMER){clearInterval(NOTIFICATION_POLL_TIMER);NOTIFICATION_POLL_TIMER=null;}
   }
 }
@@ -1020,10 +1022,28 @@ async function loadNotifications(){
     badge.hidden=!unread;
     badge.setAttribute('aria-label',`${unread} إشعار غير مقروء`);
     document.getElementById('navNotificationsBtn')?.setAttribute('title',unread?`${unread} إشعار غير مقروء`:'لا توجد إشعارات جديدة');
+    if(unread>0&&!NOTIFICATION_AUTO_OPENED&&window.matchMedia('(max-width:900px)').matches){
+      const panel=document.getElementById('notificationPanel');
+      const button=document.getElementById('navNotificationsBtn');
+      if(panel&&button){
+        panel.hidden=false;
+        button.setAttribute('aria-expanded','true');
+        NOTIFICATION_AUTO_OPENED=true;
+      }
+    }
     list.innerHTML=data.notifications?.length?data.notifications.map(notification=>`
       <button class="notification-item ${notification.is_read?'':'unread'}" type="button" onclick="openNotification(${Number(notification.id)},'${notification.link==='messages'?'messages':'community'}')">
-        <strong>${escapeHtml(notification.title)}</strong><span>${escapeHtml(notification.body||'')}${notification.created_at?` · ${escapeHtml(new Date(notification.created_at).toLocaleDateString('ar'))}`:''}</span>
+        <strong>${notification.is_read?'':`<span class="notification-unread-label">غير مقروء</span>`}${escapeHtml(notification.title)}</strong><span>${escapeHtml(notification.body||'')}${notification.created_at?` · ${escapeHtml(new Date(notification.created_at).toLocaleDateString('ar'))}`:''}</span>
       </button>`).join(''):'<div class="notification-empty">لا توجد إشعارات جديدة</div>';
+  }catch(error){toast(error.message,'err');}
+}
+
+async function markAllNotificationsRead(){
+  if(!CU)return;
+  try{
+    await apiRequest('/notifications/read-all',{method:'PATCH'});
+    await loadNotifications();
+    toast('تم تحديد الإشعارات كمقروءة','gold');
   }catch(error){toast(error.message,'err');}
 }
 
