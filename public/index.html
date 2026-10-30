@@ -141,7 +141,7 @@
     <div id="navUserBtn" onclick="goPage('account')">👤 <span id="navUN"></span></div>
     <button id="navMessagesBtn" class="btn-outline" style="display:none" onclick="goPage('messages')">💬 الرسائل</button>
     <div id="notificationControl" class="notification-control" style="display:none">
-      <button id="navNotificationsBtn" class="notification-button" type="button" aria-label="الإشعارات" aria-expanded="false" onclick="toggleNotifications()">🔔<span id="notificationBadge" class="notification-badge" hidden>0</span></button>
+      <button id="navNotificationsBtn" class="notification-button" type="button" aria-label="الإشعارات" aria-expanded="false" aria-live="polite" onclick="toggleNotifications()">🔔<span id="notificationBadge" class="notification-badge" aria-label="عدد الإشعارات غير المقروءة" hidden>0</span></button>
       <div id="notificationPanel" class="notification-panel" hidden>
         <div class="notification-panel-head"><strong>الإشعارات</strong><button type="button" onclick="loadNotifications()">تحديث</button></div>
         <div id="notificationList" class="notification-list"></div>
