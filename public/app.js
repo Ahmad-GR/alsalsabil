@@ -184,7 +184,7 @@ async function startCliqCheckout() {
     }
 
     // Make API request to create order record
-    const { orderId, checkoutUrl } = await apiRequest('/payments/create-cliq-charge', {
+    const { orderId, checkoutUrl, paymentAmount } = await apiRequest('/payments/create-cliq-charge', {
       method: 'POST',
       body: { courseIds: cart },
     });
@@ -194,7 +194,11 @@ async function startCliqCheckout() {
       return;
     }
 
-    toast(`تم إنشاء طلب الدفع. رقم الطلب: ${orderId}. سيُفعّل الاشتراك بعد تأكيد الدفع.`, 'gold');
+    if (Number.isFinite(Number(paymentAmount)) && amountEl) {
+      amountEl.textContent = `${Number(paymentAmount).toFixed(2)} JOD`;
+    }
+
+    toast(`تم إنشاء طلب الدفع. رقم الطلب: ${orderId}. سيُفعّل الاشتراك بعد تأكيد التحويل.`, 'gold');
 
   } catch (err) {
     closeCliqCheckoutModal();
