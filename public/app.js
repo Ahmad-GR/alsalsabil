@@ -1018,6 +1018,8 @@ async function loadNotifications(){
     const unread=Number(data.unread||0);
     badge.textContent=unread>99?'99+':String(unread);
     badge.hidden=!unread;
+    badge.setAttribute('aria-label',`${unread} إشعار غير مقروء`);
+    document.getElementById('navNotificationsBtn')?.setAttribute('title',unread?`${unread} إشعار غير مقروء`:'لا توجد إشعارات جديدة');
     list.innerHTML=data.notifications?.length?data.notifications.map(notification=>`
       <button class="notification-item ${notification.is_read?'':'unread'}" type="button" onclick="openNotification(${Number(notification.id)},'${notification.link==='messages'?'messages':'community'}')">
         <strong>${escapeHtml(notification.title)}</strong><span>${escapeHtml(notification.body||'')}${notification.created_at?` · ${escapeHtml(new Date(notification.created_at).toLocaleDateString('ar'))}`:''}</span>
@@ -1069,9 +1071,9 @@ function showDTab(n,el){
 /* ═══════════ ADMIN ═══════════ */
 function showATab(n,el){
   document.querySelectorAll('.admin-sec').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('atab-'+n).classList.add('active');
-  if(el) el.classList.add('active');
+  document.querySelectorAll('.atab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false');});
+  document.getElementById('atab-'+n)?.classList.add('active');
+  if(el){el.classList.add('active');el.setAttribute('aria-selected','true');}
   if(n==='list')renderAdminList();
   if(n==='videos')renderVideoSelect();
   if(n==='categories')renderCategoriesAdmin();
@@ -1081,7 +1083,13 @@ function showATab(n,el){
 
 async function renderAdmin(){
   const isTeacher=CU?.role==='teacher'||CU?.role==='instructor';
-  document.querySelectorAll('#pg-admin .atab').forEach((tab,index)=>{tab.style.display=isTeacher&&index!==5?'none':'';});
+  document.querySelectorAll('#pg-admin .atab').forEach(tab=>{
+    const allowed=!isTeacher||tab.dataset.adminTab==='posts';
+    tab.style.display=allowed?'':'none';
+  });
+  if(isTeacher){
+    showATab('posts',document.querySelector('#pg-admin [data-admin-tab="posts"]'));
+  }
   if(!isTeacher){
     renderAdminList();
     renderVideoSelect();
