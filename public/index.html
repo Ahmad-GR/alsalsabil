@@ -137,7 +137,7 @@
   </ul>
   <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="فتح القائمة" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
   <div class="nav-actions">
-    <button class="cart-btn" onclick="goPage('cart')">🛒<div class="cart-badge" id="cartBadge">0</div></button>
+    <button class="cart-btn" type="button" aria-label="السلة" onclick="goPage('cart')"><span aria-hidden="true">🛒</span><span class="cart-badge" id="cartBadge" hidden>0</span></button>
     <div id="navUserBtn" onclick="goPage('account')">👤 <span id="navUN"></span></div>
     <button id="navMessagesBtn" class="btn-outline" style="display:none" onclick="goPage('messages')">💬 الرسائل</button>
     <div id="notificationControl" class="notification-control" style="display:none">
