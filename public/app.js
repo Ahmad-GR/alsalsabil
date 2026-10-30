@@ -9,8 +9,10 @@ function setLogos(){
 }
 
 /* ═══════════ API / DATABASE ═══════════ */
-const isLocalDev=['5500','5501','5502'].includes(window.location.port);
-const API_BASE=isLocalDev ? 'http://localhost:5001' : '';
+const isLocalHttpFrontend = window.location.protocol === 'http:' && ['5500','5501','5502'].includes(window.location.port);
+// Never send a mixed-content request from an HTTPS preview to http://localhost.
+// Relative API URLs work with the Node server and with HTTPS preview proxies.
+const API_BASE=isLocalHttpFrontend ? 'http://localhost:5001' : '';
 let AUTH_TOKEN=localStorage.getItem('hf_token')||'';
 let DASHBOARD_STATE={enrollments:[],posts:[],unreadMessages:0};
 let categoriesPromise=null;
@@ -129,12 +131,9 @@ async function startTapCheckout() {
 }
 
 function openTapCheckoutModal(url){
-  const modal = document.getElementById('tapCheckoutModal');
-  const frame = document.getElementById('tapCheckoutFrame');
-  if (modal && frame && url) {
-    frame.src = url;
-    modal.classList.add('open');
-  }
+  if (!url) return;
+  // Payment providers should open in the top-level window instead of a third-party iframe.
+  window.location.assign(url);
 }
 
 function closeTapCheckoutModal(){
@@ -704,11 +703,15 @@ function updNav(){
   const notifications=document.getElementById('notificationControl');
   if(CU){
     ab.style.display='none';ub.classList.add('show');messages.style.display='inline-flex';community.style.display='inline-flex';notifications.style.display='block';
+    document.getElementById('mobileMessagesLink')?.classList.add('visible');
+    document.getElementById('mobileCommunityLink')?.classList.add('visible');
     document.getElementById('navUN').textContent=CU.name.split(' ')[0];
     loadNotifications();
     if(!NOTIFICATION_POLL_TIMER)NOTIFICATION_POLL_TIMER=setInterval(loadNotifications,60000);
   }else{
     ab.style.display='flex';ub.classList.remove('show');messages.style.display='none';community.style.display='none';notifications.style.display='none';
+    document.getElementById('mobileMessagesLink')?.classList.remove('visible');
+    document.getElementById('mobileCommunityLink')?.classList.remove('visible');
     document.getElementById('notificationPanel').hidden=true;
     if(NOTIFICATION_POLL_TIMER){clearInterval(NOTIFICATION_POLL_TIMER);NOTIFICATION_POLL_TIMER=null;}
   }
@@ -1871,6 +1874,21 @@ document.getElementById('courseModal').addEventListener('click',function(e){if(e
 /* ═══════════ INIT ═══════════ */
 async function init(){
   setLogos();
+  const paymentParams=new URLSearchParams(window.location.search);
+  const paymentStatus=paymentParams.get('payment');
+  if(paymentStatus && ['success','tap-success','cliq-success'].includes(paymentStatus)){
+    cart=[];
+    localStorage.setItem('hf_cart','[]');
+    updCartBadge();
+    toast(paymentStatus==='cliq-success'
+      ? 'تم إنشاء طلب الدفع عبر Cliq وسيتم تفعيل الاشتراك بعد تأكيد التحويل'
+      : 'تم إكمال عملية الدفع؛ ستتم تحديث اشتراكاتك بعد تأكيد البوابــــة','gold');
+    paymentParams.delete('payment');
+    paymentParams.delete('session');
+    paymentParams.delete('order');
+    const cleanQuery=paymentParams.toString();
+    history.replaceState({},document.title,`${window.location.pathname}${cleanQuery?'?'+cleanQuery:''}${window.location.hash}`);
+  }
   try{
     await loadCourses();
   }catch(e){
