@@ -25,6 +25,22 @@ function getCourseRows({ publishedOnly = false, ids = null } = {}) {
 
 const router = express.Router();
 
+function getPublicUrl(req, kind) {
+  const origin = String(req.get('origin') || '').replace(/\/$/, '').trim();
+  const configured = kind === 'client' ? process.env.CLIENT_URL : (process.env.SERVER_URL || process.env.PUBLIC_SERVER_URL);
+  const originIsHttp = /^https?:\/\//i.test(origin);
+  const configuredIsHttp = /^https?:\/\//i.test(String(configured || ''));
+
+  if (kind === 'client' && originIsHttp && !/^https?:\/\/localhost(?::|\/|$)/i.test(origin)) return origin;
+  if (configuredIsHttp && !/^https?:\/\/localhost(?::|\/|$)/i.test(String(configured))) return String(configured).replace(/\/$/, '');
+  if (kind === 'client') return originIsHttp ? origin : (String(configured || '').replace(/\/$/, '') || origin);
+
+  const forwardedProto = String(req.get('x-forwarded-proto') || '').split(',')[0].trim();
+  const forwardedHost = String(req.get('x-forwarded-host') || req.get('host') || '').split(',')[0].trim();
+  const protocol = forwardedProto || req.protocol || 'http';
+  return forwardedHost ? `${protocol}://${forwardedHost}` : String(configured || 'http://localhost:5001').replace(/\/$/, '');
+}
+
 const paymentEnabled = process.env.ENABLE_PAYMENTS !== 'false';
 const emailNotificationsEnabled = process.env.SEND_PAYMENT_EMAILS === 'true';
 
@@ -129,8 +145,8 @@ router.post('/create-checkout', protect, async (req, res) => {
       payment_method_types: ['card'],
       line_items:   lineItems,
       mode:         'payment',
-      success_url:  `${process.env.CLIENT_URL}?payment=success&session={CHECKOUT_SESSION_ID}`,
-      cancel_url:   `${process.env.CLIENT_URL}?payment=cancel`,
+      success_url:  `${getPublicUrl(req, 'client')}?payment=success&session={CHECKOUT_SESSION_ID}`,
+      cancel_url:   `${getPublicUrl(req, 'client')}?payment=cancel`,
       customer_email: req.user.email,
       metadata:     { orderId: String(orderId) },
       locale:       'ar',
@@ -285,8 +301,8 @@ router.post('/create-tap-charge', protect, async (req, res) => {
       customerEmail: req.user.email,
       description: `Purchase of ${courses.length} course(s)`,
       orderId: orderReference,
-      returnUrl: `${process.env.CLIENT_URL || 'http://localhost:5001'}?payment=tap-success&order=${encodeURIComponent(orderReference)}`,
-      postUrl: process.env.TAP_POST_URL || `${process.env.SERVER_URL || 'http://localhost:5001'}/api/payments/webhook-tap`,
+      returnUrl: `${getPublicUrl(req, 'client')}?payment=tap-success&order=${encodeURIComponent(orderReference)}`,
+      postUrl: process.env.TAP_POST_URL || `${getPublicUrl(req, 'server')}/api/payments/webhook-tap`,
       metadata: {
         orderId: orderReference,
         app: 'hifz-platform',
@@ -387,7 +403,7 @@ router.post('/create-cliq-charge', protect, async (req, res) => {
       customerPhone: req.user.phone,
       description: `Purchase of ${courses.length} course(s)`,
       orderId: orderReference,
-      returnUrl: `${process.env.CLIENT_URL || 'http://localhost:5001'}?payment=cliq-success&order=${encodeURIComponent(orderReference)}`,
+      returnUrl: `${getPublicUrl(req, 'client')}?payment=cliq-success&order=${encodeURIComponent(orderReference)}`,
       metadata: { orderId: orderReference, app: 'hifz-platform' },
     });
 
