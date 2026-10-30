@@ -11,7 +11,13 @@ let serverStarted = false;
 
 app.use(express.json({ limit: '50mb' }));
 app.use(cors({
-  origin: [process.env.CLIENT_URL, 'http://localhost:5501', 'http://127.0.0.1:5501'],
+  origin(origin, callback) {
+    const allowed = [process.env.CLIENT_URL, 'http://localhost:5500', 'http://localhost:5501', 'http://localhost:5502', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://127.0.0.1:5502'];
+    if (!origin || allowed.includes(origin)) return callback(null, true);
+    const publicHttpsOrigin = /^https:\/\/[^/]+\.(devtunnels\.ms|github\.dev|githubpreview\.dev)$/i.test(origin);
+    if (publicHttpsOrigin) return callback(null, true);
+    return callback(null, false);
+  },
   credentials: true,
 }));
 
