@@ -725,6 +725,7 @@ function updNav(){
     document.getElementById('mobileMessagesLink')?.classList.remove('visible');
     document.getElementById('mobileCommunityLink')?.classList.remove('visible');
     document.getElementById('notificationPanel').hidden=true;
+    document.body.classList.remove('notifications-open');
     NOTIFICATION_AUTO_OPENED=false;
     if(NOTIFICATION_POLL_TIMER){clearInterval(NOTIFICATION_POLL_TIMER);NOTIFICATION_POLL_TIMER=null;}
   }
@@ -1028,6 +1029,7 @@ async function loadNotifications(){
       if(panel&&button){
         panel.hidden=false;
         button.setAttribute('aria-expanded','true');
+        if(window.matchMedia('(max-width:900px)').matches)document.body.classList.add('notifications-open');
         NOTIFICATION_AUTO_OPENED=true;
       }
     }
@@ -1052,6 +1054,7 @@ function toggleNotifications(){
   const button=document.getElementById('navNotificationsBtn');
   panel.hidden=!panel.hidden;
   button.setAttribute('aria-expanded',String(!panel.hidden));
+  document.body.classList.toggle('notifications-open',window.matchMedia('(max-width:900px)').matches&&!panel.hidden);
   if(!panel.hidden)loadNotifications();
 }
 
