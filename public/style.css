@@ -341,6 +341,7 @@ body{background:var(--cream);color:var(--text);font-family:'Cairo',sans-serif;ov
 .no-data{text-align:center;padding:32px;color:var(--text3);font-size:.9rem;}
 
 /* Community feed and Messenger */
+body.notifications-open{overflow:hidden!important;}
 .notification-control{position:relative}
 .notification-button{position:relative;width:42px;height:42px;border:0;border-radius:50%;background:var(--cream2);color:var(--text2);font-size:1.1rem;cursor:pointer;transition:background .15s,transform .15s}
 .notification-button:hover{background:var(--parchment);transform:translateY(-1px)}
@@ -350,6 +351,7 @@ body{background:var(--cream);color:var(--text);font-family:'Cairo',sans-serif;ov
 .notification-panel-head{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#fff;border-bottom:1px solid var(--parchment)}
 .notification-panel-head button{border:0;background:none;color:var(--emerald);font:inherit;font-size:.8rem;cursor:pointer}
 .notification-panel-actions{display:flex;align-items:center;gap:10px;}
+.notification-close{display:none;}
 .notification-unread-label{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:20px;background:#c0392b;color:#fff;font-size:.68rem;line-height:1.2;vertical-align:middle;}
 .notification-item{display:block;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--parchment);background:#fff;text-align:right;font:inherit;cursor:pointer}
 .notification-item:hover,.notification-item.unread{background:#f5f8f5}
@@ -737,7 +739,14 @@ footer::before{
   .nav-actions>.btn-outline,.nav-actions>.btn-primary{padding:7px 9px;font-size:.78rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   #navMessagesBtn,#navCommunityBtn{display:none!important;}
   #navUserBtn{max-width:82px;padding:7px 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .notification-panel{position:fixed!important;right:10px!important;left:10px!important;top:72px!important;width:auto!important;max-height:min(420px,calc(100dvh - 84px))!important;border-radius:14px!important;z-index:9200!important;background:#fff!important;box-shadow:0 18px 50px rgba(13,79,60,.28)!important;}
+  .notification-panel{position:fixed!important;inset:64px 8px 8px 8px!important;width:auto!important;height:auto!important;max-height:none!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;border-radius:16px!important;z-index:9200!important;background:#fff!important;box-shadow:0 18px 50px rgba(13,79,60,.28)!important;}
+  .notification-panel[hidden]{display:none!important;}
+  .notification-panel-head{flex:0 0 auto!important;min-height:58px!important;gap:8px!important;padding:10px 12px!important;}
+  .notification-panel-actions{flex-wrap:nowrap!important;gap:4px!important;}
+  .notification-panel-actions button{min-height:38px!important;white-space:nowrap!important;padding:6px 8px!important;font-size:.72rem!important;}
+  .notification-close{display:inline-grid!important;width:38px!important;height:38px!important;place-items:center!important;border:1px solid var(--parchment)!important;border-radius:50%!important;background:var(--cream2)!important;color:var(--text)!important;font-size:1rem!important;}
+  .notification-list{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;padding-bottom:env(safe-area-inset-bottom)!important;}
+  .notification-item{min-height:72px!important;padding:14px!important;font-size:.88rem!important;box-sizing:border-box!important;}
   .hero{min-height:calc(100svh - 72px);padding:50px 16px;}
   .hero h1{font-size:clamp(2rem,9vw,3rem)!important;}
   .hero p{font-size:1rem!important;}
@@ -825,7 +834,7 @@ footer::before{
   .admin-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
   #notificationControl{display:block!important;flex:0 0 42px!important;}
   .notification-button{width:38px!important;height:38px!important;}
-  .notification-panel{top:64px!important;right:8px!important;left:8px!important;max-height:calc(100dvh - 72px)!important;}
+  .notification-panel{inset:64px 6px 6px 6px!important;}
   .notification-unread-label{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:20px;background:#c0392b;color:#fff;font-size:.68rem;line-height:1.2;vertical-align:middle;}
   .notification-item strong{line-height:1.8;}
 }
