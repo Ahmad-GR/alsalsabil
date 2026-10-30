@@ -143,7 +143,7 @@
     <div id="notificationControl" class="notification-control" style="display:none">
       <button id="navNotificationsBtn" class="notification-button" type="button" aria-label="الإشعارات" aria-expanded="false" aria-live="polite" onclick="toggleNotifications()">🔔<span id="notificationBadge" class="notification-badge" aria-label="عدد الإشعارات غير المقروءة" hidden>0</span></button>
       <div id="notificationPanel" class="notification-panel" hidden>
-        <div class="notification-panel-head"><strong>الإشعارات</strong><button type="button" onclick="loadNotifications()">تحديث</button></div>
+        <div class="notification-panel-head"><strong>الإشعارات</strong><div class="notification-panel-actions"><button type="button" onclick="loadNotifications()">تحديث</button><button type="button" onclick="markAllNotificationsRead()">تحديد الكل كمقروء</button></div></div>
         <div id="notificationList" class="notification-list"></div>
       </div>
     </div>
