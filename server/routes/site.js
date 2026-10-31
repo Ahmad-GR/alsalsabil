@@ -217,6 +217,14 @@ function normalizeUsername(username) {
   return String(username || '').trim().normalize('NFKC').toLowerCase();
 }
 function isValidUsername(username) { return USERNAME_REGEX.test(normalizeUsername(username)); }
+function validateDisplayNameOrThrow(value, fieldName) {
+  const name = String(value || '').trim();
+  if (!name || name.length > 80 || /[<>]/u.test(name) || /[\u0000-\u001F\u007F]/u.test(name)) {
+    const error = new Error(`${fieldName} يحتوي على أحرف غير صالحة`);
+    error.statusCode = 400;
+    throw error;
+  }
+}
 function isStrongPassword(password) { return PASSWORD_REGEX.test(String(password || '').normalize('NFKC')); }
 
 function validateUsernameOrThrow(username) {
@@ -616,6 +624,8 @@ router.post('/register', rateLimit({ windowMs: 15 * 60 * 1000, max: 5, message: 
     const lastName = String(req.body?.lastName ?? nameParts.lastName ?? '').trim();
     if (!firstName || !lastName || !username || !email || !password)
       return res.status(400).json({ error: 'يرجى إكمال جميع الحقول' });
+    validateDisplayNameOrThrow(firstName, 'الاسم الأول');
+    validateDisplayNameOrThrow(lastName, 'اسم العائلة');
     if (!skipEmailVerification && !isEmailConfigured())
       return res.status(503).json({ error: 'التسجيل متوقف مؤقتاً حتى يتم إعداد خدمة البريد الإلكتروني' });
 
@@ -990,6 +1000,8 @@ router.put('/profile', protect, async (req, res) => {
     const lastName = String(req.body?.lastName ?? nameParts.lastName ?? '').trim();
     const avatarUrl = normalizeImageData(req.body?.avatarUrl);
     if (!firstName || !lastName || !username) return res.status(400).json({ error: 'الاسم الأول واسم العائلة واسم المستخدم مطلوبة' });
+    validateDisplayNameOrThrow(firstName, 'الاسم الأول');
+    validateDisplayNameOrThrow(lastName, 'اسم العائلة');
 
     const user = getUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'المستخدم غير موجود' });
@@ -1213,6 +1225,9 @@ router.post('/admin/users', protect, isAdmin, async (req, res) => {
     if (!name || !username || !email || !password)
       return res.status(400).json({ error: 'يرجى إدخال الاسم واسم المستخدم والبريد وكلمة المرور' });
 
+    const { firstName, lastName } = splitName(name);
+    validateDisplayNameOrThrow(firstName, 'الاسم الأول');
+    validateDisplayNameOrThrow(lastName, 'اسم العائلة');
     validateUsernameOrThrow(username);
     validatePasswordOrThrow(password);
 
@@ -1223,7 +1238,6 @@ router.post('/admin/users', protect, isAdmin, async (req, res) => {
     if (getUserByEmail(normalizedEmail)) return res.status(400).json({ error: 'هذا البريد الإلكتروني مسجل بالفعل' });
     if (getUserByUsername(normalizedUsername)) return res.status(400).json({ error: 'اسم المستخدم مستخدم بالفعل' });
 
-    const { firstName, lastName } = splitName(name);
     const passwordHash = await bcrypt.hash(password, 12);
     const timestamp = nowIso();
 
