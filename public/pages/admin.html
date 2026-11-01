@@ -47,9 +47,10 @@
         <div class="fg full"><label>وصف الكورس *</label><textarea id="cDesc" placeholder="وصف تفصيلي للكورس..."></textarea></div>
         <div class="fg full"><label>ماذا يتضمن الكورس؟ (سطر لكل بند)</label><textarea id="cIncludes" placeholder="48 ساعة تعليمية&#10;إشراف تعليمي مجاز&#10;متابعة فردية&#10;شهادة إتمام"></textarea></div>
         <div class="fg full">
-          <label>صورة/خلفية الكورس (اختياري)</label>
-          <input type="file" id="cImage" accept="image/*" onchange="previewCourseImg(this)">
-          <img id="cImgPreview" style="margin-top:10px;max-height:120px;border-radius:10px;display:none">
+          <label>غلاف الكورس (المقاس المطلوب 1200×675 بكسل، بنسبة 16:9)</label>
+          <input type="file" id="cImage" accept="image/jpeg,image/png,image/webp" onchange="previewCourseImg(this)">
+          <small>JPG أو PNG أو WebP، الحد الأقصى 5 ميجابايت، ودقة عرض 640 بكسل على الأقل</small>
+          <img id="cImgPreview" class="course-cover-preview" alt="معاينة غلاف الكورس">
         </div>
       </div>
       <div style="display:flex;gap:12px;margin-top:8px">
