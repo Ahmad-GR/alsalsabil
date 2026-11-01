@@ -363,7 +363,7 @@ async function loadHomepageStats(){
 function toast(msg,t=''){
   const e=document.createElement('div');
   e.className='toast'+(t==='err'?' err':t==='gold'?' gold':'');
-  e.innerHTML=`<span>${msg}</span>`;
+  e.innerHTML=`<span>${escapeHtml(msg)}</span>`;
   document.getElementById('toasts').appendChild(e);
   setTimeout(()=>e.style.opacity='0',2600);
   setTimeout(()=>e.remove(),3000);
@@ -437,10 +437,10 @@ function renderHomeCoursesEl(){
 
 function courseCardHTML(c){
   const hasVideo=c.lessons&&c.lessons.length>0&&(c.lessons[0].url||c.lessons[0].videoData);
+  const cover=c.imgData||'';
   return `<div class="course-card" onclick="openCourseDetail(${c.id})">
     <div class="card-thumb" style="background:${c.bg||'linear-gradient(135deg,#1a6b4a,#22865e)'}">
-      ${hasVideo?`<video src="${c.lessons[0].videoData||c.lessons[0].url}" muted preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6"></video>`:''}
-      <div class="emoji" style="position:relative;z-index:1">${c.emoji||'📖'}</div>
+      ${cover?`<img class="course-cover" src="${cover}" alt="غلاف ${escapeHtml(c.title||'الكورس')}">`:hasVideo?`<video src="${c.lessons[0].videoData||c.lessons[0].url}" muted preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>`:`<div class="emoji" style="position:relative;z-index:1">${c.emoji||'📖'}</div>`}
       ${c.badge?`<div class="card-badge">${c.badge}</div>`:''}
       <div class="play-overlay"><span>▶</span></div>
     </div>
@@ -765,7 +765,7 @@ async function refreshDash(){
   document.getElementById('dPhone').value=CU.phone||'';
   const avatarPreview=document.getElementById('dAvatarPreview');
   if(avatarPreview&&CU.avatarUrl){avatarPreview.src=CU.avatarUrl;avatarPreview.style.display='block';}
-  document.getElementById('dGreet').innerHTML=`مرحباً <strong>${CU.name}</strong>! يمكنك متابعة كورساتك وإدارة حسابك من هنا.`;
+  document.getElementById('dGreet').innerHTML=`مرحباً <strong>${escapeHtml(CU.name)}</strong>! يمكنك متابعة كورساتك وإدارة حسابك من هنا.`;
   const enrolled=CU.enrolledCourses||[];
   document.getElementById('stEnrolled').textContent=enrolled.length;
   let dashboard={enrollments:[],posts:[],unreadMessages:0};
@@ -1261,7 +1261,7 @@ async function deleteAdminPost(id){
 function renderAdminList(){
   document.getElementById('adminCourseList').innerHTML=COURSES.map(c=>`
     <div class="admin-course-item">
-      <div class="aci-emoji">${c.emoji||'📖'}</div>
+      ${c.imgData?`<img class="aci-cover" src="${c.imgData}" alt="">`:`<div class="aci-emoji">${c.emoji||'📖'}</div>`}
       <div class="aci-info">
         <div class="aci-title">${c.title}</div>
         <div class="aci-meta">${c.cat} | $${c.price} | ${c.lessons ? c.lessons.length : 0} درس | ${c.students || 0} مشترك | ${c.lifetimeAccess!==false?'وصول مدى الحياة':'وصول محدود'}</div>
@@ -1293,6 +1293,10 @@ function editCourse(id){
   document.getElementById('cBadge').value=c.badge||'';
   document.getElementById('cDesc').value=c.desc||'';
   document.getElementById('cIncludes').value=(c.includes||[]).join('\n');
+  const coverPreview=document.getElementById('cImgPreview');
+  if(c.imgData){coverPreview.src=c.imgData;coverPreview.style.display='block';}
+  else{coverPreview.removeAttribute('src');coverPreview.style.display='none';}
+  document.getElementById('cImage').value='';
   renderCourseCategoryOptions(c.cat);
   showATab('add',document.querySelectorAll('.atab')[1]);
 }
@@ -1365,7 +1369,10 @@ function resetCourseForm(){
   document.getElementById('cTeacher').value='';
   document.getElementById('cExpiredAction').value='keep';
   document.getElementById('courseFormTitle').textContent='إضافة كورس جديد';
-  document.getElementById('cImgPreview').style.display='none';
+  document.getElementById('cImage').value='';
+  const coverPreview=document.getElementById('cImgPreview');
+  coverPreview.removeAttribute('src');
+  coverPreview.style.display='none';
 }
 
 async function renderCourseTeacherOptions(selected=''){
@@ -1381,8 +1388,20 @@ async function renderCourseTeacherOptions(selected=''){
 
 function previewCourseImg(input){
   const file=input.files[0];if(!file)return;
+  if(!/^image\/(jpeg|png|webp)$/i.test(file.type)){toast('اختر صورة JPG أو PNG أو WebP','err');input.value='';return;}
+  if(file.size>5*1024*1024){toast('حجم غلاف الكورس يجب ألا يزيد عن 5 ميجابايت','err');input.value='';return;}
   const reader=new FileReader();
-  reader.onload=e=>{const img=document.getElementById('cImgPreview');img.src=e.target.result;img.style.display='block';};
+  reader.onload=e=>{
+    const image=new Image();
+    image.onload=()=>{
+      const ratio=image.width/image.height;
+      if(image.width<640||image.height<360||Math.abs(ratio-(16/9))>0.03){
+        toast('مقاس الغلاف يجب أن يكون بنسبة 16:9 وبعرض 640px على الأقل','err');input.value='';return;
+      }
+      const preview=document.getElementById('cImgPreview');preview.src=e.target.result;preview.style.display='block';
+    };
+    image.src=e.target.result;
+  };
   reader.readAsDataURL(file);
 }
 
