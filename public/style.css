@@ -146,7 +146,8 @@ body{background:var(--cream);color:var(--text);font-family:'Cairo',sans-serif;ov
 ═══════════════════════════════ */
 .course-card{background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(201,168,76,.15);transition:all .3s;cursor:pointer;}
 .course-card:hover{transform:translateY(-6px);box-shadow:var(--shadow2);}
-.card-thumb{height:185px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+ .card-thumb{width:100%;aspect-ratio:16/9;height:auto;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.card-thumb .course-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:1;}
 .card-thumb .emoji{font-size:3.8rem;z-index:1;}
 .card-thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7;}
 .card-thumb .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:opacity .3s;}
@@ -236,8 +237,8 @@ body{background:var(--cream);color:var(--text);font-family:'Cairo',sans-serif;ov
 /* Course list in admin */
 .admin-course-list{display:flex;flex-direction:column;gap:12px;}
 .admin-course-item{background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:16px 20px;display:flex;align-items:center;gap:16px;}
-.aci-emoji{font-size:2rem;width:52px;text-align:center;}
-.aci-info{flex:1;}
+.aci-emoji{font-size:2rem;width:52px;text-align:center;}.course-cover-preview{display:none;width:240px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:1px solid var(--parchment,#e8dcc8);margin-top:10px;}
+.aci-cover{width:92px;height:52px;object-fit:cover;border-radius:6px;display:block;}.aci-info{flex:1;}
 .aci-title{font-weight:700;color:var(--text);margin-bottom:3px;}
 .aci-meta{font-size:.78rem;color:var(--text3);}
 .aci-actions{display:flex;gap:8px;}
