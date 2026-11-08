@@ -31,7 +31,7 @@ app.use(cors({
   },
   credentials: true,
 }));
-
+   app.use('/.well-known', express.static(path.join(__dirname, '..', 'public', '.well-known')));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // app.use('/api/auth', require('./routes/auth')); // تم تعطيل هذا المسار لأنه يتعارض مع site.js
