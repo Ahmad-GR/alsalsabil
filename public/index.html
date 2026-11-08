@@ -8,6 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <!-- Tap Payments will be loaded dynamically. -->
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a6b4a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="السلسبيل">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 </head>
 <body>
 
@@ -251,6 +258,9 @@
     console.error('Application page loading failed:', error);
   }
 })();
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}
 </script>
 </body>
 </html>
