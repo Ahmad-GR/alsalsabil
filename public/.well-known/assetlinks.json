@@ -3,6 +3,7 @@
       "target": {
         "namespace": "android_app",
         "package_name": "app.alsalsabil.twa",
-        "sha256_cert_fingerprints": ["E7:9D:BB:26:59:9A:10:55:47:52:62:36:FB:0C:00:42:3C:56:24:27:D4:C3:3F:5C:D9:4C:48:2B:29:70:E0:40"]
+               "sha256_cert_fingerprints": ["E7:9D:BB:26:59:9A:10:55:47:52:62:36:FB:0C:00:42:3C:56:24:27:D4:C3:3F:5C:D9:4C:48:2B:29:70:E0:40"]
+
       }
     }]
