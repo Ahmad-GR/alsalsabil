@@ -1,6 +1,6 @@
 const express = require('express');
 const stripe  = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { protect } = require('../middleware/auth');
+const { protect, isAdmin } = require('../middleware/auth');
 const { createTapCharge, verifyTapWebhookSignature } = require('../utils/tap');
 // Cliq is presented as a manual bank-transfer option; no external Cliq API credentials are required.
 const { getDb, runInTransaction, nowIso } = require('../lib/postgres');
@@ -55,28 +55,113 @@ if (!process.env.TAP_SECRET_KEY && !process.env.TAP_SECRET) {
  * Enrolls a user in the courses associated with a paid order.
  * @param {number} orderId - The internal SQLite ID of the order.
  */
-function enrollUserInCourses(orderId) {
-  const db = getDb();
+function enrollOrderInTransaction(db, orderId) {
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
   if (!order) return 0;
 
   const orderItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
   let enrolled = 0;
-
-  runInTransaction((transactionDb) => {
-    const timestamp = nowIso();
-    orderItems.forEach(item => {
-      if (!item.course_id) return;
-      const existing = transactionDb.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?')
-        .get(order.user_id, item.course_id);
-      if (existing) return;
-      transactionDb.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`) 
-        .run(order.user_id, item.course_id, order.id, timestamp, timestamp);
-      enrolled += 1;
-    });
+  const timestamp = nowIso();
+  orderItems.forEach(item => {
+    if (!item.course_id) return;
+    const existing = db.prepare('SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?')
+      .get(order.user_id, item.course_id);
+    if (existing) return;
+    db.prepare(`INSERT INTO enrollments (user_id, course_id, order_id, progress, completed_lessons_json, created_at, updated_at) VALUES (?, ?, ?, 0, '[]', ?, ?)`)
+      .run(order.user_id, item.course_id, order.id, timestamp, timestamp);
+    enrolled += 1;
   });
   return enrolled;
 }
+
+function enrollUserInCourses(orderId) {
+  return runInTransaction(db => enrollOrderInTransaction(db, orderId));
+}
+
+router.get('/admin/orders', protect, isAdmin, (req, res) => {
+  try {
+    const rows = getDb().prepare(`
+      SELECT
+        o.id, o.order_id, o.total_amount, o.status, o.payment_method,
+        o.payment_reference, o.created_at,
+        u.first_name, u.last_name, u.email, u.phone,
+        oi.course_id, oi.course_title, oi.price_at_time
+      FROM (SELECT id FROM orders ORDER BY created_at DESC, id DESC LIMIT 200) recent
+      JOIN orders o ON o.id = recent.id
+      JOIN users u ON u.id = o.user_id
+      LEFT JOIN order_items oi ON oi.order_id = o.id
+      ORDER BY o.created_at DESC, o.id DESC, oi.id ASC
+    `).all();
+    const ordersById = new Map();
+    rows.forEach(row => {
+      if (!ordersById.has(row.id)) {
+        ordersById.set(row.id, {
+          id: row.id,
+          orderId: row.order_id,
+          total: Number(row.total_amount || 0),
+          status: row.status,
+          paymentMethod: row.payment_method || '',
+          paymentReference: row.payment_reference || '',
+          createdAt: row.created_at,
+          studentName: [row.first_name, row.last_name].filter(Boolean).join(' ').trim(),
+          email: row.email,
+          phone: row.phone || '',
+          items: [],
+        });
+      }
+      if (row.course_title) {
+        ordersById.get(row.id).items.push({
+          courseId: row.course_id,
+          title: row.course_title,
+          price: Number(row.price_at_time || 0),
+        });
+      }
+    });
+    const orders = Array.from(ordersById.values());
+    const pendingCount = Number(getDb().prepare("SELECT COUNT(*) AS count FROM orders WHERE status = 'pending'").get().count || 0);
+    return res.json({
+      orders,
+      pendingCount,
+      limited: orders.length === 200,
+    });
+  } catch (error) {
+    console.error('Could not load admin orders:', error.message);
+    return res.status(500).json({ error: 'تعذر تحميل الطلبات' });
+  }
+});
+
+router.post('/admin/orders/:orderId/confirm', protect, isAdmin, (req, res) => {
+  const orderId = Number(req.params.orderId);
+  if (!Number.isSafeInteger(orderId) || orderId < 1) {
+    return res.status(400).json({ error: 'رقم الطلب غير صالح' });
+  }
+
+  try {
+    const result = runInTransaction(db => {
+      const order = db.prepare('SELECT id, payment_method, status FROM orders WHERE id = ?').get(orderId);
+      if (!order) return 'not_found';
+      if (order.payment_method !== 'cliq' || order.status !== 'pending') return 'not_pending_cliq';
+
+      const updated = db.prepare(`
+        UPDATE orders SET status = 'paid', updated_at = ?
+        WHERE id = ? AND payment_method = 'cliq' AND status = 'pending'
+      `).run(nowIso(), orderId);
+      if (!updated.changes) return 'not_pending_cliq';
+
+      enrollOrderInTransaction(db, orderId);
+      return 'confirmed';
+    });
+
+    if (result === 'not_found') return res.status(404).json({ error: 'الطلب غير موجود' });
+    if (result !== 'confirmed') {
+      return res.status(409).json({ error: 'الطلب ليس طلب كليك معلقاً، أو تمت معالجته مسبقاً' });
+    }
+    return res.json({ success: true, message: 'تم تأكيد التحويل وإلحاق الطالب بالكورس' });
+  } catch (error) {
+    console.error('Could not confirm Cliq order:', error.message);
+    return res.status(500).json({ error: 'تعذر تأكيد الطلب' });
+  }
+});
 
 /**
  * Sends a confirmation email after a successful purchase.
