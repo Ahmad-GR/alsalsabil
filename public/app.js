@@ -9,10 +9,15 @@ function setLogos(){
 }
 
 /* ═══════════ API / DATABASE ═══════════ */
-const isLocalHttpFrontend = window.location.protocol === 'http:' && ['5500','5501','5502'].includes(window.location.port);
-// Never send a mixed-content request from an HTTPS preview to http://localhost.
-// Relative API URLs work with the Node server and with HTTPS preview proxies.
-const API_BASE=isLocalHttpFrontend ? 'http://localhost:5001' : '';
+const LOCAL_HOSTS=['localhost','127.0.0.1'];
+const isLocalHost=LOCAL_HOSTS.includes(window.location.hostname);
+const API_BASE=isLocalHost
+  ? (['5000','5001'].includes(window.location.port)
+      ? ''
+      : `${window.location.protocol}//${window.location.hostname}:5000`)
+  : window.location.origin==='https://alsalsabel.onrender.com'
+    ? ''
+    : 'https://alsalsabel.onrender.com';
 let AUTH_TOKEN=localStorage.getItem('hf_token')||'';
 let DASHBOARD_STATE={enrollments:[],posts:[],unreadMessages:0};
 let categoriesPromise=null;
@@ -335,6 +340,15 @@ async function loadAboutTeam(){
         <div class="team-role">معلم في فريق السلسبيل</div>
       </article>`).join('')
       : '<div class="team-empty">سيظهر معلمونا هنا قريباً.</div>';
+    teamGrid.querySelectorAll('img.team-avatar').forEach(image=>{
+      image.addEventListener('error',()=>{
+        const fallback=document.createElement('div');
+        fallback.className='team-avatar';
+        fallback.setAttribute('aria-hidden','true');
+        fallback.textContent='🧑‍🏫';
+        image.replaceWith(fallback);
+      },{once:true});
+    });
   }catch(error){
     console.error('Could not load the about page teaching team',error);
     teamGrid.innerHTML='<div class="team-empty">تعذر تحميل الفريق التعليمي. <button class="btn-outline" type="button" onclick="loadAboutTeam()">إعادة المحاولة</button></div>';
