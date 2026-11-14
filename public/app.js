@@ -1131,7 +1131,62 @@ function showATab(n,el){
   if(n==='videos')renderVideoSelect();
   if(n==='categories')renderCategoriesAdmin();
   if(n==='users'){renderAdminUserCourseOptions();renderUsers();}
+  if(n==='orders')renderAdminOrders();
   if(n==='posts')renderAdminPostCourses();
+}
+
+async function renderAdminOrders(){
+  const list=document.getElementById('adminOrdersList');
+  if(!list)return;
+  list.innerHTML='<div class="no-data">جاري تحميل الطلبات...</div>';
+  try{
+    const data=await apiRequest('/payments/admin/orders');
+    const orders=data.orders||[];
+    const pendingCount=Number(data.pendingCount||0);
+    const ordersTab=document.querySelector('#pg-admin [data-admin-tab="orders"]');
+    if(ordersTab)ordersTab.innerHTML=`🧾 الطلبات${pendingCount?` <span class="admin-order-badge">${pendingCount>99?'99+':pendingCount}</span>`:''}`;
+    if(!orders.length){
+      list.innerHTML='<div class="no-data">لا توجد طلبات حتى الآن.</div>';
+      return;
+    }
+    const paymentLabels={cliq:'كليك',stripe:'بطاقة بنكية',tap:'Tap Payments'};
+    const statusLabels={pending:'قيد المراجعة',paid:'مدفوع',manual:'يدوي',cancelled:'ملغي',failed:'فشل'};
+    list.innerHTML=(data.limited?'<p class="auth-note">يتم عرض أحدث 200 طلب فقط.</p>':'')+orders.map(order=>{
+      const amount=Number(order.total||0)*(order.paymentMethod==='cliq'?0.71:1);
+      const amountText=Number.isFinite(amount)?`${amount.toFixed(2)} د.أ`:'—';
+      const date=order.createdAt?new Date(order.createdAt).toLocaleString('ar-JO'):'—';
+      const items=(order.items||[]).map(item=>`<li>${escapeHtml(item.title)}</li>`).join('');
+      const canConfirm=order.status==='pending'&&order.paymentMethod==='cliq';
+      return `<article class="admin-order-card">
+        <div class="admin-order-top">
+          <div><strong>رقم الطلب: ${escapeHtml(order.orderId)}</strong><div class="admin-order-date">${escapeHtml(date)}</div></div>
+          <span class="admin-order-status ${order.status==='pending'?'pending':'complete'}">${escapeHtml(statusLabels[order.status]||order.status||'غير معروف')}</span>
+        </div>
+        <div class="admin-order-details">
+          <div><strong>الطالب:</strong> ${escapeHtml(order.studentName||'—')}</div>
+          <div><strong>البريد:</strong> ${escapeHtml(order.email||'—')}</div>
+          ${order.phone?`<div><strong>الهاتف:</strong> ${escapeHtml(order.phone)}</div>`:''}
+          <div><strong>طريقة الدفع:</strong> ${escapeHtml(paymentLabels[order.paymentMethod]||order.paymentMethod||'—')}</div>
+          <div><strong>المبلغ:</strong> ${amountText}</div>
+          ${order.paymentReference?`<div><strong>مرجع الدفع:</strong> ${escapeHtml(order.paymentReference)}</div>`:''}
+        </div>
+        <div class="admin-order-courses"><strong>الكورسات المطلوبة:</strong><ul>${items||'<li>لا توجد تفاصيل للكورسات</li>'}</ul></div>
+        ${canConfirm?`<button class="btn-primary admin-order-confirm" onclick="confirmCliqOrder(${Number(order.id)})">تأكيد استلام التحويل وإلحاق الطالب</button>`:''}
+      </article>`;
+    }).join('');
+  }catch(error){
+    list.innerHTML=`<div class="no-data">${escapeHtml(error.message||'تعذر تحميل الطلبات')}</div>`;
+  }
+}
+
+async function confirmCliqOrder(id){
+  if(!Number.isSafeInteger(id)||id<1)return;
+  if(!confirm('تأكد من استلام مبلغ التحويل البنكي قبل تأكيد الطلب. هل تريد المتابعة؟'))return;
+  try{
+    const result=await apiRequest(`/payments/admin/orders/${id}/confirm`,{method:'POST'});
+    toast(result.message||'تم تأكيد الطلب','gold');
+    await renderAdminOrders();
+  }catch(error){toast(error.message||'تعذر تأكيد الطلب','err');}
 }
 
 async function renderAdmin(){
