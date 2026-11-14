@@ -1,115 +1,186 @@
-const http = require('node:http');
-const https = require('node:https');
+<div class="page" id="pg-admin">
+  <div style="background:linear-gradient(135deg,var(--teal),var(--emerald));padding:48px 40px;text-align:center">
+    <h1 style="font-family:'Amiri',serif;font-size:2rem;color:#fff;margin-bottom:6px">🔧 لوحة الإدارة</h1>
+    <p style="color:rgba(255,255,255,.7)">إدارة الكورسات والمحتوى التعليمي</p>
+  </div>
+  <div class="admin-wrap">
+    <div class="admin-tabs" role="tablist" aria-label="أقسام لوحة الإدارة">
+      <button type="button" class="atab active" role="tab" aria-controls="atab-list" aria-selected="true" data-admin-tab="list" onclick="showATab('list',this)">📋 الكورسات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-add" aria-selected="false" data-admin-tab="add" onclick="showATab('add',this)">➕ إضافة كورس</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-videos" aria-selected="false" data-admin-tab="videos" onclick="showATab('videos',this)">🎬 إدارة الفيديوهات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-categories" aria-selected="false" data-admin-tab="categories" onclick="showATab('categories',this)">🏷️ التصنيفات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-users" aria-selected="false" data-admin-tab="users" onclick="showATab('users',this)">👥 المستخدمون</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-orders" aria-selected="false" data-admin-tab="orders" onclick="showATab('orders',this)">🧾 الطلبات</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-posts" aria-selected="false" data-admin-tab="posts" onclick="showATab('posts',this)">📝 المنشورات</button>
+    </div>
 
-const baseUrl = process.env.TEST_BASE_URL || 'http://127.0.0.1:5001';
-const allowedHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
+    <!-- LIST -->
+    <div class="admin-sec active" id="atab-list">
+      <h3>جميع الكورسات</h3>
+      <div class="admin-course-list" id="adminCourseList"></div>
+    </div>
 
-function fail(message) {
-  throw new Error(message);
-}
+    <!-- ADD COURSE -->
+    <div class="admin-sec" id="atab-add">
+      <h3 id="courseFormTitle">إضافة كورس جديد</h3>
+      <input type="hidden" id="editCourseId">
+      <div class="form-grid">
+        <div class="fg"><label>اسم الكورس *</label><input type="text" id="cTitle" placeholder="مثال: برنامج حفظ جزء عم"></div>
+        <div class="fg"><label>التصنيف *</label>
+          <select id="cCat"><!-- Options will be loaded dynamically --></select>
+        </div>
+        <div class="fg"><label>السعر (USD) *</label><input type="number" id="cPrice" placeholder="15"></div>
+        <div class="fg"><label>السعر القديم (USD)</label><input type="number" id="cOldPrice" placeholder="29"></div>
+        <div class="fg"><label>المستوى</label>
+          <select id="cLevel"><option>مبتدئ</option><option>متوسط</option><option>متقدم</option></select>
+        </div>
+        <div class="fg"><label>المدة</label><input type="text" id="cDuration" placeholder="مثال: 48 ساعة"></div>
+        <div class="fg"><label for="cAccessType">تصنيف الوصول</label>
+          <select id="cAccessType"><option value="lifetime">وصول مدى الحياة</option><option value="limited">وصول محدود</option></select>
+        </div>
+        <div class="fg"><label>المعلم المسؤول</label><select id="cTeacher"><option value="">بدون تعيين معلم</option></select></div>
+        <div class="fg"><label>تاريخ انتهاء الكورس</label><input type="datetime-local" id="cEndAt"></div>
+        <div class="fg"><label>الإجراء بعد الانتهاء</label>
+          <select id="cExpiredAction"><option value="keep">إبقاء الكورس مع إخفائه من العامة</option><option value="archive">أرشفة الكورس</option><option value="delete">حذف الكورس وبياناته</option></select>
+        </div>
+        <div class="fg"><label>الإيموجي</label><input type="text" id="cEmoji" placeholder="📖"></div>
+        <div class="fg"><label>الشارة (اختياري)</label><input type="text" id="cBadge" placeholder="مثال: الأكثر طلباً"></div>
+        <div class="fg full"><label>وصف الكورس *</label><textarea id="cDesc" placeholder="وصف تفصيلي للكورس..."></textarea></div>
+        <div class="fg full"><label>ماذا يتضمن الكورس؟ (سطر لكل بند)</label><textarea id="cIncludes" placeholder="48 ساعة تعليمية&#10;إشراف تعليمي مجاز&#10;متابعة فردية&#10;شهادة إتمام"></textarea></div>
+        <div class="fg full">
+          <label>غلاف الكورس (المقاس المطلوب 1200×675 بكسل، بنسبة 16:9)</label>
+          <input type="file" id="cImage" accept="image/jpeg,image/png,image/webp" onchange="previewCourseImg(this)">
+          <small>JPG أو PNG أو WebP، الحد الأقصى 5 ميجابايت، ودقة عرض 640 بكسل على الأقل</small>
+          <img id="cImgPreview" class="course-cover-preview" alt="معاينة غلاف الكورس">
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button class="btn-primary" style="padding:12px 32px" onclick="saveCourse()">💾 حفظ الكورس</button>
+        <button class="btn-outline" style="padding:12px 24px" onclick="resetCourseForm()">إلغاء</button>
+      </div>
+    </div>
 
-async function request(path, options = {}) {
-  const url = new URL(path, baseUrl);
-  const transport = url.protocol === 'https:' ? https : http;
-  return new Promise((resolve, reject) => {
-    const req = transport.request(url, {
-      method: options.method || 'GET',
-      headers: options.headers || {},
-      timeout: 5000,
-    }, (res) => {
-      let body = '';
-      res.setEncoding('utf8');
-      res.on('data', (chunk) => { body += chunk; });
-      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body }));
-    });
-    req.on('timeout', () => req.destroy(new Error('Request timeout')));
-    req.on('error', reject);
-    if (options.body !== undefined) req.write(options.body);
-    req.end();
-  });
-}
+    <!-- CATEGORIES -->
+    <div class="admin-sec" id="atab-categories">
+      <h3>إدارة التصنيفات</h3>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px;margin-bottom:18px">
+        <h4 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:16px" id="categoryFormTitle">➕ إضافة تصنيف جديد</h4>
+        <input type="hidden" id="editCategoryId">
+        <div class="form-grid">
+          <div class="fg"><label>اسم التصنيف *</label><input type="text" id="catName" placeholder="مثال: السنة النبوية"></div>
+          <div class="fg"><label>الاسم اللطيف (Slug) *</label><input type="text" id="catSlug" placeholder="sunnah-studies (انجليزي بدون مسافات)"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn-primary" style="padding:11px 24px" onclick="saveCategory()">💾 حفظ التصنيف</button>
+          <button class="btn-outline" style="padding:11px 24px" onclick="resetCategoryForm()">إلغاء</button>
+        </div>
+      </div>
+      <div id="categoriesList"></div>
+    </div>
 
-function jsonBody(value) {
-  return JSON.stringify(value);
-}
+    <!-- VIDEOS -->
+    <div class="admin-sec" id="atab-videos">
+      <h3>إدارة فيديوهات الكورسات</h3>
+      <div class="fg">
+        <label>اختر الكورس</label>
+        <select id="videoCourseSelect" onchange="loadCourseVideos()"></select>
+      </div>
+      <div id="videoManageArea" style="display:none">
+        <h4 style="font-family:'Amiri',serif;color:var(--text);margin-bottom:16px;font-size:1.1rem">دروس الكورس</h4>
+        <div class="admin-course-list" id="lessonsList"></div>
+        <div style="margin-top:20px;background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px">
+          <h4 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:16px">➕ إضافة درس جديد</h4>
+          <div class="form-grid">
+            <div class="fg"><label>عنوان الدرس *</label><input type="text" id="lessonTitle" placeholder="مثال: مقدمة في التجويد"></div>
+            <div class="fg"><label>المدة</label><input type="text" id="lessonDur" placeholder="مثال: 45 دقيقة"></div>
+            <div class="fg full"><label>رفع الفيديو *</label>
+              <div class="video-upload-area" id="videoDropArea" onclick="document.getElementById('videoFile').click()" ondragover="handleDrag(event,this)" ondrop="handleDrop(event,this)">
+                <input type="file" id="videoFile" accept="video/*" onchange="handleVideoSelect(this)">
+                <div style="font-size:2.5rem;margin-bottom:8px">🎬</div>
+                <p style="font-weight:700;color:var(--text2)">اضغط هنا لرفع الفيديو أو اسحب الملف</p>
+                <p>يدعم: MP4, MOV, AVI, MKV (حتى 2GB للحفظ المحلي)</p>
+              </div>
+              <div class="uploaded-videos" id="uploadedVideos"></div>
+            </div>
+            <div class="fg full"><label>رابط فيديو خارجي (بديل)</label><input type="text" id="lessonUrl" placeholder="https://www.youtube.com/watch?v=... أو رابط مباشر"></div>
+            <div class="fg full" style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="lessonFree" style="width:auto">
+              <label for="lessonFree" style="margin-bottom:0">درس مجاني (للمعاينة)</label>
+            </div>
+          </div>
+          <button class="btn-primary" style="padding:11px 28px" onclick="saveLesson()">إضافة الدرس</button>
+        </div>
+      </div>
+    </div>
 
-main();
-
-async function main() {
-  const target = new URL(baseUrl);
-  if (!allowedHosts.has(target.hostname)) {
-    fail(`Blocked: TEST_BASE_URL must target localhost. Received: ${target.hostname}`);
-  }
-
-  const report = [];
-  const pass = (name, details) => report.push({ name, status: 'PASS', details });
-  const failCheck = (name, details) => report.push({ name, status: 'FAIL', details });
-
-  try {
-    const health = await request('/api/health');
-    if (health.status === 200) pass('Health endpoint reachable', `HTTP ${health.status}`);
-    else failCheck('Health endpoint reachable', `HTTP ${health.status}`);
-
-    for (const header of ['x-content-type-options', 'x-frame-options', 'referrer-policy', 'permissions-policy']) {
-      if (health.headers[header]) pass(`Security header: ${header}`, health.headers[header]);
-      else failCheck(`Security header: ${header}`, 'Header missing');
-    }
-
-    for (const path of ['/api/site/admin/users', '/api/videos/bunny-info/demo']) {
-      const response = await request(path);
-      if (response.status === 401 || response.status === 403) pass(`Protected route denies anonymous access: ${path}`, `HTTP ${response.status}`);
-      else failCheck(`Protected route denies anonymous access: ${path}`, `HTTP ${response.status}`);
-    }
-
-    const cors = await request('/api/site/courses', { headers: { Origin: 'https://attacker.invalid' } });
-    if (!cors.headers['access-control-allow-origin']) pass('Untrusted CORS origin rejected', 'No ACAO response header');
-    else failCheck('Untrusted CORS origin rejected', `ACAO=${cors.headers['access-control-allow-origin']}`);
-
-    const localCors = await request('/api/site/courses', { headers: { Origin: 'http://127.0.0.1:8080' } });
-    if (localCors.headers['access-control-allow-origin'] === 'http://127.0.0.1:8080') {
-      pass('Local development CORS origin allowed', 'http://127.0.0.1:8080');
-    } else {
-      failCheck('Local development CORS origin allowed', `ACAO=${localCors.headers['access-control-allow-origin'] || 'missing'}`);
-    }
-
-    const injectionPayloads = [
-      "' OR 1=1 --",
-      "<img src=x onerror=alert(document.domain)>",
-      '../../../etc/passwd',
-    ];
-
-    for (const payload of injectionPayloads) {
-      const login = await request('/api/site/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: jsonBody({ login: payload, password: 'x' }),
-      });
-      if ([400, 401, 429].includes(login.status)) pass('Malicious input returned safe rejection', payload.slice(0, 48));
-      else failCheck('Malicious input returned unexpected response', `HTTP ${login.status}: ${payload.slice(0, 48)}`);
-    }
-
-    const rateLimitResponses = [];
-    for (let attempt = 0; attempt < 12; attempt++) {
-      const response = await request('/api/site/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: jsonBody({ login: 'nonexistent-user', password: 'x' }),
-      });
-      rateLimitResponses.push(response.status);
-    }
-    if (rateLimitResponses.includes(429)) pass('Login rate limiting activates', `Statuses: ${rateLimitResponses.join(', ')}`);
-    else failCheck('Login rate limiting activates', `No 429 observed; statuses: ${rateLimitResponses.join(', ')}`);
-
-    for (const path of ['/.env', '/.git/config', '/server/.env']) {
-      const response = await request(path);
-      const secretMarkers = /(DATABASE_URL|JWT_SECRET|CLOUDINARY_API_SECRET|TAP_SECRET_KEY|EMAILJS_PRIVATE_KEY|PAYPAL_CLIENT_SECRET|BUNNY_STREAM_TOKEN_SECRET)/i.test(response.body);
-      if (response.status === 404 || !secretMarkers) pass(`Sensitive file not exposed: ${path}`, `HTTP ${response.status}`);
-      else failCheck(`Sensitive file not exposed: ${path}`, 'Secret marker detected in response');
-    }
-  } catch (error) {
-    failCheck('Regression runner connection', error.message);
-  }
-
-  console.log(JSON.stringify({ baseUrl, timestamp: new Date().toISOString(), report }, null, 2));
-  process.exitCode = report.some((item) => item.status === 'FAIL') ? 1 : 0;
-}
+    <!-- USERS -->
+    <div class="admin-sec" id="atab-users">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+        <h3 style="margin-bottom:0">المستخدمون المسجلون</h3>
+        <button class="btn-outline" style="padding:8px 16px" onclick="renderUsers()">🔄 تحديث القائمة</button>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px;margin-bottom:18px">
+        <h4 style="font-family:'Amiri',serif;color:var(--emerald);margin-bottom:16px">➕ إضافة مستخدم أو أدمن يدويًا</h4>
+        <div class="form-grid">
+          <div class="fg"><label>الاسم الكامل *</label><input type="text" id="adminUserName" placeholder="مثال: أحمد محمد"></div>
+          <div class="fg"><label>اسم المستخدم *</label><input type="text" id="adminUsername" placeholder="مثال: user123"></div>
+          <div class="fg"><label>البريد الإلكتروني *</label><input type="email" id="adminUserEmail" placeholder="user@email.com"></div>
+          <div class="fg"><label>كلمة المرور *</label><input type="password" id="adminUserPassword" placeholder="6+ أحرف مع حرف ورقم ورمز"></div>
+          <div class="fg"><label>الدور *</label>
+            <select id="adminUserRole">
+              <option value="user">مستخدم</option>
+              <option value="student" selected>طالب</option>
+              <option value="teacher">معلم</option>
+              <option value="admin">مدير</option>
+            </select>
+          </div>
+          <div class="fg full">
+            <label>إلحاق مباشر بكورس (اختياري)</label>
+            <select id="adminUserCourse"></select>
+          </div>
+        </div>
+        <p class="auth-note" style="margin-bottom:14px">الحسابات التي ينشئها المدير تُفعّل مباشرة دون إرسال رمز تحقق أو بريد إلكتروني، ويمكن إلحاقها بكورس فورًا.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn-primary" style="padding:11px 24px" onclick="saveAdminUser()">➕ إضافة الحساب</button>
+          <button class="btn-outline" style="padding:11px 24px" onclick="resetAdminUserForm()">إلغاء</button>
+        </div>
+      </div>
+      <div id="usersList"></div>
+    </div>
+    <div class="admin-sec" id="atab-orders">
+      <div class="admin-orders-heading">
+        <h3>طلبات شراء الكورسات</h3>
+        <button class="btn-outline" style="padding:8px 16px" onclick="renderAdminOrders()">🔄 تحديث الطلبات</button>
+      </div>
+      <p class="auth-note">تظهر أحدث 200 طلب. لا تؤكد تحويل كليك إلا بعد التحقق من استلام المبلغ.</p>
+      <div id="adminOrdersList" aria-live="polite"></div>
+    </div>
+    <div class="admin-sec" id="atab-posts">
+      <h3>إدارة المنشورات والإعلانات</h3>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);padding:20px">
+        <div class="form-grid">
+          <div class="fg"><label>العنوان *</label><input id="postTitle" maxlength="200"></div>
+          <div class="fg">          <label>نوع المحتوى</label>
+          <select id="postType" onchange="togglePostCourse()">
+            <option value="post">منشور</option>
+            <option value="announcement" id="announcementPostOption">إعلان في الهيدر</option>
+          </select>
+          </div>
+          <div class="fg">
+          <label>الكورس المستهدف</label><select id="postCourse"><option value="">منشور عام</option></select></div>
+          <div class="fg full"><label>المحتوى *</label><textarea id="postBody" maxlength="30000"></textarea></div>
+          <div class="fg full" id="postImageField">
+            <label>صورة المنشور (مربعة)</label>
+            <input id="postImage" type="file" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewPostImage()">
+            <small class="auth-note">يفضل استخدام صورة مربعة مثل 1080×1080 للحفاظ على شكل البطاقات.</small>
+            <img id="postImagePreview" class="post-image-preview" alt="معاينة صورة المنشور" style="display:none">
+          </div>
+        </div>
+        <p class="auth-note" style="margin-top:12px">المنشور يظهر للمستخدمين المسجلين، ويمكن تخصيصه لمشتركي كورس محدد. أما الإعلان فيظهر كشريط إخباري عاماً لجميع زوار الموقع.</p>
+        <button class="btn-primary" onclick="publishAdminPost()">نشر المحتوى</button>
+        <div id="adminPostsList" style="margin-top:20px"></div>
+        <div id="teacherStudents" style="margin-top:28px"></div>
+      </div>
+    </div>
+  </div>
+</div>
