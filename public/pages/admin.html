@@ -10,6 +10,7 @@
       <button type="button" class="atab" role="tab" aria-controls="atab-videos" aria-selected="false" data-admin-tab="videos" onclick="showATab('videos',this)">🎬 إدارة الفيديوهات</button>
       <button type="button" class="atab" role="tab" aria-controls="atab-categories" aria-selected="false" data-admin-tab="categories" onclick="showATab('categories',this)">🏷️ التصنيفات</button>
       <button type="button" class="atab" role="tab" aria-controls="atab-users" aria-selected="false" data-admin-tab="users" onclick="showATab('users',this)">👥 المستخدمون</button>
+      <button type="button" class="atab" role="tab" aria-controls="atab-orders" aria-selected="false" data-admin-tab="orders" onclick="showATab('orders',this)">🧾 الطلبات</button>
       <button type="button" class="atab" role="tab" aria-controls="atab-posts" aria-selected="false" data-admin-tab="posts" onclick="showATab('posts',this)">📝 المنشورات</button>
     </div>
 
@@ -145,6 +146,14 @@
         </div>
       </div>
       <div id="usersList"></div>
+    </div>
+    <div class="admin-sec" id="atab-orders">
+      <div class="admin-orders-heading">
+        <h3>طلبات شراء الكورسات</h3>
+        <button class="btn-outline" style="padding:8px 16px" onclick="renderAdminOrders()">🔄 تحديث الطلبات</button>
+      </div>
+      <p class="auth-note">تظهر أحدث 200 طلب. لا تؤكد تحويل كليك إلا بعد التحقق من استلام المبلغ.</p>
+      <div id="adminOrdersList" aria-live="polite"></div>
     </div>
     <div class="admin-sec" id="atab-posts">
       <h3>إدارة المنشورات والإعلانات</h3>
