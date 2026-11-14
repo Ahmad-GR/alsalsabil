@@ -65,6 +65,13 @@ async function main() {
     if (!cors.headers['access-control-allow-origin']) pass('Untrusted CORS origin rejected', 'No ACAO response header');
     else failCheck('Untrusted CORS origin rejected', `ACAO=${cors.headers['access-control-allow-origin']}`);
 
+    const localCors = await request('/api/site/courses', { headers: { Origin: 'http://127.0.0.1:8080' } });
+    if (localCors.headers['access-control-allow-origin'] === 'http://127.0.0.1:8080') {
+      pass('Local development CORS origin allowed', 'http://127.0.0.1:8080');
+    } else {
+      failCheck('Local development CORS origin allowed', `ACAO=${localCors.headers['access-control-allow-origin'] || 'missing'}`);
+    }
+
     const injectionPayloads = [
       "' OR 1=1 --",
       "<img src=x onerror=alert(document.domain)>",
