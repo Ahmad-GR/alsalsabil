@@ -224,6 +224,19 @@ body{background:var(--cream);color:var(--text);font-family:'Cairo',sans-serif;ov
 .admin-sec{display:none;}
 .admin-sec.active{display:block;}
 .admin-sec h3{font-family:'Amiri',serif;font-size:1.4rem;color:var(--text);margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid var(--parchment);}
+.admin-orders-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.admin-orders-heading h3{margin-bottom:0;}
+.admin-order-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:12px;background:#c0392b;color:#fff;font-size:.7rem;}
+.admin-order-card{margin:14px 0;padding:18px;background:var(--white);border:1px solid var(--parchment);border-radius:var(--r-sm);}
+.admin-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--parchment);}
+.admin-order-date{margin-top:4px;color:var(--text3);font-size:.78rem;}
+.admin-order-status{padding:4px 10px;border-radius:16px;font-size:.78rem;font-weight:700;}
+.admin-order-status.pending{background:#fff3cd;color:#8a5a00;}
+.admin-order-status.complete{background:#e8f5e9;color:var(--emerald);}
+.admin-order-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 16px;margin:14px 0;font-size:.85rem;overflow-wrap:anywhere;}
+.admin-order-courses{font-size:.88rem;}
+.admin-order-courses ul{margin:6px 0 0;padding-right:22px;color:var(--text2);}
+.admin-order-confirm{margin-top:14px;padding:9px 16px;}
 
 /* Form */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
